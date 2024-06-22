@@ -29,7 +29,7 @@ const HomePage=()=> {
             <Head>
                 <title>PHiscord - Home Page</title>
             </Head>
-            <SiteHeader />
+            <ModeToggle/>
             <div className="w-full flex-wrap flex justify-center">
                 <Link href="/login" className={buttonVariants()}>
                     Login
@@ -42,7 +42,7 @@ const HomePage=()=> {
                 {user ? (
                     <div>
                         <h1>Welcome, {user.email}</h1>
-                        <button onClick={handleSignOut} className={buttonVariants()}>
+                        <button onClick={handleSignOut} className={buttonVariants({variant:"destructive"})}>
                             Logout
                         </button>
                     </div>

@@ -18,5 +18,4 @@ const firestore = getFirestore(app);
 
 export { auth, firestore, app };
 
-
 // Ini adalah tempat inisialisasi firebase awal kita
