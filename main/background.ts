@@ -21,6 +21,8 @@ if (isProd) {
       preload: path.join(__dirname, 'preload.js'),
     },
   })
+  // Untuk hilangin tool barnya
+  // mainWindow.setMenu(null);
 
   if (isProd) {
     await mainWindow.loadURL('app://./home')
