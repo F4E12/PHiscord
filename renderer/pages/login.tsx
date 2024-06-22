@@ -87,7 +87,9 @@ const formSchema = z.object({
         <Head>
           <title>PHiscord | Login</title>
         </Head>
-        <LoginForm />
+        <div className="flex">
+          <LoginForm />
+        </div>
         <div className="w-full flex-wrap flex justify-center">
           <Link href="/home" className={buttonVariants()}>
             Home
