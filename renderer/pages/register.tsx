@@ -19,9 +19,13 @@ import { Input } from "@/components/ui/input";
 import { registerUser } from "../lib/createuser";
 import { useRouter } from "next/router";
 import withGuest from "@/hoc/withGuest";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { auth,firestore } from "../../firebase/firebaseApp";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth, firestore } from "../../firebase/firebaseApp";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -36,13 +40,13 @@ const formSchema = z.object({
   password: z.string().min(6, {
     message: " - Password must be at least 6 characters.",
   }),
-  month: z.string().min(1,{
+  month: z.string().min(1, {
     message: " - Month is required.",
   }),
-  day: z.string().min(1,{
+  day: z.string().min(1, {
     message: " - Day is required.",
   }),
-  year: z.string().min(1,{
+  year: z.string().min(1, {
     message: " - Year is required.",
   }),
 });
@@ -55,9 +59,9 @@ export function RegisterForm() {
       displayname: "",
       username: "",
       password: "",
-      month: '',
-      day: '',
-      year: '',
+      month: "",
+      day: "",
+      year: "",
     },
   });
 
@@ -65,7 +69,11 @@ export function RegisterForm() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
       const user = userCredential.user;
 
       const currentDetails = {
@@ -73,16 +81,16 @@ export function RegisterForm() {
         email: values.email,
         username: values.username,
         displayname: values.displayname,
-        status: '',
+        status: "",
         DOB: `${values.day}-${values.month}-${values.year}`,
       };
 
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           console.log(user);
-          const userDocRef = doc(firestore, 'users', user.uid);
+          const userDocRef = doc(firestore, "users", user.uid);
           await setDoc(userDocRef, currentDetails);
-          router.push('/login'); // Redirect to login page after successful registration
+          router.push("/login"); // Redirect to login page after successful registration
         }
       });
     } catch (err) {
@@ -102,7 +110,10 @@ export function RegisterForm() {
     </option>
   ));
 
-  const years = Array.from({ length: 100 }, (v, k) => new Date().getFullYear() - k).map((year) => (
+  const years = Array.from(
+    { length: 100 },
+    (v, k) => new Date().getFullYear() - k
+  ).map((year) => (
     <option key={year} value={year}>
       {year}
     </option>
@@ -174,56 +185,65 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-      <div className="text-sm font-medium leading-none">
-        <p className="pb-2">Date Of Birth</p>
-        <div className="flex space-x-4">
-          <div className="flex-1">
-          <FormField
-            name="month"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <select {...field} className="flex-1 bg-input rounded-md px-3 py-2 w-full">
-                    {/* <option value="">Month</option> */}
-                    {months}
-                  </select>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          </div>
-          <div className="flex-1">
-          <FormField
-            name="day"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <select {...field} className="flex-1 bg-input rounded-md px-3 py-2 w-full">
-                    {/* <option value="">Day</option> */}
-                    {days}
-                  </select>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          </div>
-          <div className="flex-1">
-          <FormField
-            name="year"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <select {...field} className="flex-1 bg-input rounded-md px-3 py-2 w-full">
-                    {/* <option value="">Year</option> */}
-                    {years}
-                  </select>
-                </FormControl>
-              </FormItem>
-            )}
-            />
+        <div className="text-sm font-medium leading-none">
+          <p className="pb-2">Date Of Birth</p>
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <FormField
+                name="month"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                      >
+                        {/* <option value="">Month</option> */}
+                        {months}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
+            <div className="flex-1">
+              <FormField
+                name="day"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                      >
+                        {/* <option value="">Day</option> */}
+                        {days}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex-1">
+              <FormField
+                name="year"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <select
+                        {...field}
+                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                      >
+                        {/* <option value="">Year</option> */}
+                        {years}
+                      </select>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
         </div>
-      </div>
         <Button type="submit" className={buttonVariants({ variant: "form" })}>
           Submit
         </Button>
@@ -244,10 +264,13 @@ const RegisterPage = () => {
             Create an account
           </h1>
           <RegisterForm />
-          <div className="text-xs">By registering, you agree to PHiscord's Terms of Service and Privacy Policy</div>
+          <div className="text-xs">
+            By registering, you agree to PHiscord's Terms of Service and Privacy
+            Policy
+          </div>
           <div className="text-form mt-3">
-              <Link href="/login">Already have an account?</Link>
-            </div>
+            <Link href="/login">Already have an account?</Link>
+          </div>
         </div>
       </div>
       {/* <div className="w-full flex-wrap flex justify-center">
