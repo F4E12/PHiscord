@@ -10,6 +10,12 @@ const DirectMessages = () => {
     { name: "Koya", status: "online" },
     { name: "Discord", status: "official" },
     { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
+    { name: "Rayerz", status: "offline" },
   ];
 
   return (

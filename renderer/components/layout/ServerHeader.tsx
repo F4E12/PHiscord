@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ServerSetting from "./ServerSetting";
+import ServerSetting from "./ServerSetting/ServerSetting";
 import Icon from "../ui/icon";
 
 interface ServerHeaderProps {

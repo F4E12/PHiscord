@@ -6,14 +6,11 @@ interface ServerContentProps {
   server: string | null;
 }
 
-const MainContent = ({ server }: ServerContentProps) => {
-  if (!server) {
-    return <div className="text-white">Please select a server</div>;
-  }
+const MainContent = ({ server = "DM" }: ServerContentProps) => {
   return (
     <div className="flex flex-grow">
       <div className="w-64 bg-secondary">
-        {server}
+        {/* {server} */}
         <InfoSection selectedServer={server} />
       </div>
       <div className="flex-grow bg-primary p-2">

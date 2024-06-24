@@ -10,15 +10,17 @@ interface InfoSectionProps {
 
 const InfoSection = ({ selectedServer }: InfoSectionProps) => {
   return (
-    <div className="flex flex-col bg-secondary">
-      <div className="flex-grow">
+    <div className="flex flex-col h-full bg-secondary">
+      <div className="flex-grow overflow-auto">
         {selectedServer === "DM" ? (
           <DirectMessages />
         ) : (
           <ServerInformation selectedServer={selectedServer} />
         )}
       </div>
-      <UserInformation></UserInformation>
+      <div className="">
+        <UserInformation></UserInformation>
+      </div>
     </div>
   );
 };

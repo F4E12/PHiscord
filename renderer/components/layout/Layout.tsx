@@ -3,7 +3,11 @@ import { ReactNode, useState } from "react";
 import ServerList from "./ServerList";
 import MainContent from "./MainContent";
 
-export default function Layout() {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
   return (
     <div className="flex h-screen">

@@ -1,6 +1,6 @@
 import React from "react";
 import Separator from "../ui/separator";
-import ServerHeader from "./serverheader";
+import ServerHeader from "./ServerHeader";
 
 interface ServerInformationProps {
   selectedServer: string;
