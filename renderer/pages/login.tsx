@@ -57,8 +57,8 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Error Singing In",
-        description: error.message
-      })
+        description: error.message,
+      });
     }
   };
 
@@ -78,7 +78,7 @@ export function LoginForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input {...field} className="bg-input" />
+                <Input {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}
@@ -93,7 +93,7 @@ export function LoginForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input type="password" {...field} className="bg-input" />
+                <Input type="password" {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}

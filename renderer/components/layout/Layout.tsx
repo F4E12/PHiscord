@@ -1,17 +1,14 @@
 // components/Layout.tsx
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import ServerList from "./ServerList";
 import MainContent from "./MainContent";
 
-interface Props {
-  children: ReactNode;
-}
-
-export default function Layout({ children }: Props) {
+export default function Layout() {
+  const [selectedServer, setSelectedServer] = useState<string | null>(null);
   return (
     <div className="flex h-screen">
-      <ServerList />
-      <MainContent>{children}</MainContent>
+      <ServerList setSelectedServer={setSelectedServer} />
+      <MainContent server={selectedServer}></MainContent>
     </div>
   );
 }

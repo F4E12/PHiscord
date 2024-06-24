@@ -135,7 +135,7 @@ export function RegisterForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input {...field} className="bg-input" />
+                <Input {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}
@@ -150,7 +150,7 @@ export function RegisterForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input {...field} className="bg-input" />
+                <Input {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}
@@ -165,7 +165,7 @@ export function RegisterForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input {...field} className="bg-input" />
+                <Input {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}
@@ -180,7 +180,7 @@ export function RegisterForm() {
                 <FormMessage className="italic text-xs" />
               </div>
               <FormControl>
-                <Input type="password" {...field} className="bg-input" />
+                <Input type="password" {...field} className="bg-primary" />
               </FormControl>
             </FormItem>
           )}
@@ -196,7 +196,7 @@ export function RegisterForm() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                        className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
                         {/* <option value="">Month</option> */}
                         {months}
@@ -214,7 +214,7 @@ export function RegisterForm() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                        className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
                         {/* <option value="">Day</option> */}
                         {days}
@@ -232,7 +232,7 @@ export function RegisterForm() {
                     <FormControl>
                       <select
                         {...field}
-                        className="flex-1 bg-input rounded-md px-3 py-2 w-full"
+                        className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
                         {/* <option value="">Year</option> */}
                         {years}
