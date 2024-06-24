@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SiteHeader } from "@/components/site-header";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../firebase/firebaseApp";
+import { auth } from "../firebase/firebaseApp";
 import { signOutUser } from "../lib/authentication";
 import withAuth from "../../renderer/hoc/withAuth";
 import Layout from "../components/layout/Layout";

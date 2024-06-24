@@ -25,7 +25,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
-import { auth, firestore } from "../../firebase/firebaseApp";
+import { auth, firestore } from "../firebase/firebaseApp";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -82,7 +82,8 @@ export function RegisterForm() {
         username: values.username,
         displayname: values.displayname,
         status: "",
-        DOB: `${values.day}-${values.month}-${values.year}`,
+        DOB: `${values.year}-${values.month}-${values.day}`,
+        profilePicture: "",
       };
 
       onAuthStateChanged(auth, async (user) => {

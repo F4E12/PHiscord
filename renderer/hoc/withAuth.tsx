@@ -1,7 +1,7 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../firebase/firebaseApp';
+import React from "react";
+import { useRouter } from "next/router";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase/firebaseApp";
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
   return (props: any) => {
@@ -10,7 +10,7 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
 
     React.useEffect(() => {
       if (!loading && !user) {
-        router.push('/login');
+        router.push("/login");
       }
     }, [user, loading]);
 

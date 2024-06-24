@@ -1,11 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "../ui/icon";
 import { UserSetting } from "./UserSetting/UserSetting";
+import { doc, setDoc } from "firebase/firestore";
+import { firestore, auth } from "@/firebase/firebaseApp";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserData } from "@/lib/retrieveuser";
+
+export const updateUserData = async (userId: string, data: any) => {
+  try {
+    const userDocRef = doc(firestore, "users", userId);
+    await setDoc(userDocRef, data, { merge: true });
+    console.log("User data updated successfully");
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    throw error;
+  }
+};
 
 function UserInformation() {
+  const [user, loading, error] = useAuthState(auth);
   const [mute, setMute] = useState(false);
   const [deafen, setDeafen] = useState(false);
   const [setting, setSetting] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
+  const [refresh, setRefresh] = useState(0);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const data = await getUserData(user.uid);
+      setUserData(data);
+    };
+    fetchUserData();
+  }, []);
+
   const toogleMute = () => {
     setMute(!mute);
   };
@@ -19,14 +47,19 @@ function UserInformation() {
     <div className="w-64 flex items-center justify-between p-2 bg-gray-900 rounded-md max-w-sm bottom-0">
       <div className="flex items-center space-x-2">
         <div className="relative">
-          <img
-            src="/images/loginbg.svg"
-            alt="User Avatar"
-            className="w-10 h-10 rounded-full"
-          />
+          <Avatar>
+            <AvatarImage
+              src={userData?.profilePicture || "/path-to-your-image.png"}
+            />
+            <AvatarFallback>
+              {(userData?.displayname || "").charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         </div>
         <div className="flex flex-col">
-          <span className="text-white text-sm font-semibold">IWasf4e12</span>
+          <span className="text-white text-sm font-semibold">
+            {userData?.displayname}
+          </span>
           <span className="text-gray-400 text-xs">:D</span>
         </div>
       </div>

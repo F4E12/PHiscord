@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const DirectMessages = () => {
   const messages = [
@@ -22,11 +22,10 @@ const DirectMessages = () => {
     <div className="flex flex-col space-y-2 p-2">
       {messages.map((message, index) => (
         <div key={index} className="flex items-center space-x-2">
-          <Avatar
-            src="https://via.placeholder.com/40"
-            alt={message.name}
-            fallback={message.name.charAt(0)}
-          />
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
           <span className="text-white">{message.name}</span>
         </div>
       ))}

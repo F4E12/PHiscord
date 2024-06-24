@@ -1,7 +1,9 @@
 import { getUserData } from "@/lib/retrieveuser";
 import React, { useEffect, useState } from "react";
-import { auth } from "../../../../firebase/firebaseApp";
+import { auth } from "../../../firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { updateUserData } from "@/lib/updateuserdata";
+import { uploadImage } from "@/lib/uploadimage";
 
 const GeneralSettings = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -29,12 +31,34 @@ const GeneralSettings = () => {
       [e.target.name]: e.target.value,
     });
   };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCounter(counter + 1);
+    const file = e.target.files?.[0];
+    if (file && user) {
+      try {
+        const downloadURL = await uploadImage(file, user.uid);
+        setUserData({
+          ...userData,
+          profilePicture: downloadURL,
+        });
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add code to save the changes to Firestore
-    console.log("Saved Data:", userData); // Debugging line
-    setIsEditing(false);
+    try {
+      if (user) {
+        await updateUserData(user.uid, userData);
+        console.log("Data saved successfully: ", userData);
+        setIsEditing(false);
+        setCounter(0);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
   };
 
   return (
@@ -109,6 +133,7 @@ const GeneralSettings = () => {
             type="file"
             name="profilePicture"
             className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            onChange={handleFileChange}
             disabled={!isEditing}
           />
         </div>

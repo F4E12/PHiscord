@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../firebase/firebaseApp';
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase/firebaseApp";
 
 const withGuest = (WrappedComponent: React.ComponentType) => {
   const Guest = (props: any) => {
@@ -10,7 +10,7 @@ const withGuest = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       if (!loading && user) {
-        router.push('/home');
+        router.push("/home");
       }
     }, [user, loading]);
 
