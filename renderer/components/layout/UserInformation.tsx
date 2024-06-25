@@ -18,21 +18,11 @@ export const updateUserData = async (userId: string, data: any) => {
   }
 };
 
-function UserInformation() {
-  const [user, loading, error] = useAuthState(auth);
+function UserInformation({ userData, onProfileUpdate, onImageChange }) {
+  // const [user, loading, error] = useAuthState(auth);
   const [mute, setMute] = useState(false);
   const [deafen, setDeafen] = useState(false);
   const [setting, setSetting] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
-  const [refresh, setRefresh] = useState(0);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const data = await getUserData(user.uid);
-      setUserData(data);
-    };
-    fetchUserData();
-  }, []);
 
   const toogleMute = () => {
     setMute(!mute);
@@ -41,6 +31,7 @@ function UserInformation() {
     setDeafen(!deafen);
   };
   const toogleSetting = () => {
+    console.log(userData);
     setSetting(!setting);
   };
   return (
@@ -81,7 +72,13 @@ function UserInformation() {
         <button className="" onClick={() => toogleSetting()}>
           <Icon type="setting"></Icon>
         </button>
-        {setting && <UserSetting />}
+        {setting && (
+          <UserSetting
+            userData={userData}
+            onProfileUpdate={onProfileUpdate}
+            onImageChange={onImageChange}
+          />
+        )}
         {setting && (
           <button
             className="absolute right-0 top-0"
