@@ -1,12 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import InfoSection from "@/components/layout/InfoSection";
 import ChatSection from "@/components/layout/ChatSection";
+import { getServerDetails } from "@/lib/retrieveserver";
 
 interface ServerContentProps {
   userData: any;
   onProfileUpdate: (newData: any) => void;
   onImageChange: (newImageURL: string) => void;
-  server: string | null;
+  server: any;
 }
 
 const MainContent = ({
@@ -27,7 +28,7 @@ const MainContent = ({
         />
       </div>
       <div className="flex-grow bg-primary p-2">
-        <ChatSection />
+        <ChatSection server={server} />
       </div>
     </div>
   );

@@ -1,18 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Separator from "../ui/separator";
 import ServerHeader from "./ServerHeader";
+import { getServerDetails } from "@/lib/retrieveserver";
 
 interface ServerInformationProps {
-  selectedServer: string;
+  selectedServer: any;
 }
 
 const ServerInformation = ({ selectedServer }: ServerInformationProps) => {
   const textChannels = ["general", "games", "tugas", "music"];
   const voiceChannels = ["Lounge", "Stream Room"];
-
+  //   const [textChannels, setTextChannel] = useState(serverDetails.channels.voiceChannels);
+  // const [voiceChannels, setVoiceChannel] = useState();
+  const [serverDetails, setServerDetails] = useState(selectedServer);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const data = await getServerDetails(selectedServer);
+      setServerDetails(data);
+    };
+    fetchUserData();
+  }, [selectedServer]);
   return (
     <>
-      <ServerHeader serverName={selectedServer}></ServerHeader>
+      <ServerHeader serverName={serverDetails?.name}></ServerHeader>
       <div className="flex flex-col p-2 w-full">
         <div className="mt-2">
           <h3 className="text-gray-400">Text Channels</h3>

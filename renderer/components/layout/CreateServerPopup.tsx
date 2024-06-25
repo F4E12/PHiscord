@@ -11,17 +11,61 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { firestore, auth } from "../../firebase/firebaseApp"; // Adjust the import path as needed
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-const ServerDialog = () => {
+const ServerDialog = ({ user }) => {
   const [step, setStep] = useState(0); // 0 for initial choice, 1 for create server, 2 for join server
   const [serverName, setServerName] = useState("");
   const [joinLink, setJoinLink] = useState("");
   const [open, setOpen] = useState(false);
 
-  const handleCreateServer = () => {
+  const handleCreateServer = async () => {
     // Logic to create server
-    console.log("Creating server with name:", serverName);
-    // Reset state and close dialog after creation
+    if (!serverName) return;
+
+    try {
+      // Create server document in Firestore
+      console.log(user?.id);
+      const serverRef = await addDoc(collection(firestore, "servers"), {
+        name: serverName,
+        ownerId: user?.id,
+        members: [user?.id],
+        createdAt: new Date(),
+      });
+
+      const serverId = serverRef.id;
+
+      await addDoc(collection(firestore, `servers/${serverId}/textChannels`), {
+        name: "General",
+        createdAt: new Date(),
+      });
+
+      await addDoc(collection(firestore, `servers/${serverId}/voiceChannels`), {
+        name: "General",
+        createdAt: new Date(),
+      });
+
+      // Add server reference to user's serverList
+      const userRef = doc(firestore, "users", user?.id);
+      await updateDoc(userRef, {
+        serverList: arrayUnion(serverRef.id),
+      });
+
+      // Reset state and close dialog after creation
+      setStep(0);
+      setServerName("");
+      setOpen(false);
+    } catch (error) {
+      console.error("Error creating server:", error);
+    }
     setStep(0);
     setServerName("");
     setOpen(false);

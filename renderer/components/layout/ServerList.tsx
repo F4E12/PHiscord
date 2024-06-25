@@ -1,26 +1,19 @@
-import { useState } from "react";
 import Separator from "../../components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "../ui/button";
+
 import CreateServerPopup from "./CreateServerPopup";
 
 interface ServerListProps {
-  setSelectedServer: (server: string | null) => void;
+  userData: any;
+  servers: any[];
+  setSelectedServer: (server: any | null) => void;
 }
 
-const ServerList = ({ setSelectedServer }: ServerListProps) => {
-  const servers = ["Server 1", "Server 2", "Server 3"];
+const ServerList = ({
+  userData,
+  servers,
+  setSelectedServer,
+}: ServerListProps) => {
   return (
     <div className="flex flex-col  bg-primary p-2 gap-2 overflow-auto no-scrollbar">
       <div className="" onClick={() => setSelectedServer("DM")}>
@@ -31,14 +24,14 @@ const ServerList = ({ setSelectedServer }: ServerListProps) => {
       </div>
       <Separator />
       {servers.map((server, index) => (
-        <div className="" onClick={() => setSelectedServer(server)}>
+        <div className="" onClick={() => setSelectedServer(server.id)}>
           <Avatar key={index}>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>{server.charAt(0)}</AvatarFallback>
+            {/* <AvatarFallback>{server?.charAt(0)}</AvatarFallback> */}
           </Avatar>
         </div>
       ))}
-      <CreateServerPopup />
+      <CreateServerPopup user={userData} />
     </div>
   );
 };

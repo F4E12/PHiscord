@@ -84,6 +84,7 @@ export function RegisterForm() {
         status: "",
         DOB: `${values.year}-${values.month}-${values.day}`,
         profilePicture: "",
+        serverList: "",
       };
 
       onAuthStateChanged(auth, async (user) => {

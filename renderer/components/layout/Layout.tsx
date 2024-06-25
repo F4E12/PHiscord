@@ -5,12 +5,29 @@ import { getUserData } from "@/lib/retrieveuser";
 import ServerList from "./ServerList";
 import MainContent from "./MainContent";
 import { updateUserData } from "@/lib/updateuserdata";
+import { getAllServerDetails } from "@/lib/retrieveserver";
 
 const Layout = ({ children }) => {
-  const [selectedServer, setSelectedServer] = useState<string | null>(null);
+  const [selectedServer, setSelectedServer] = useState<any>("DM");
+  const [selectedServerDetails, setSelectedServerDetails] = useState<any>(null);
   const [user, loading, error] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
+  const [servers, setServers] = useState<any[]>([]);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        const data = await getUserData(user.uid);
+        setUserData(data);
+        if (data?.serverList?.length > 0) {
+          console.log("AAAA", data?.serverList);
+          const serverDetails = await getAllServerDetails(data.serverList);
+          setServers(serverDetails);
+        }
+      }
+    };
+    fetchUserData();
+  }, [user]);
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
@@ -19,7 +36,16 @@ const Layout = ({ children }) => {
       }
     };
     fetchUserData();
-  }, [user]);
+  }, [servers]);
+
+  useEffect(() => {
+    if (selectedServer && servers.length > 1) {
+      const serverDetails = servers.find(
+        (server) => server?.id === selectedServer
+      );
+      setSelectedServerDetails(serverDetails);
+    }
+  }, [selectedServer, servers]);
 
   const handleProfileUpdate = async (newData: any) => {
     if (user) {
@@ -41,7 +67,11 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex h-screen">
-      <ServerList setSelectedServer={setSelectedServer} />
+      <ServerList
+        setSelectedServer={setSelectedServer}
+        userData={userData}
+        servers={servers}
+      />
       <MainContent
         userData={userData}
         onProfileUpdate={handleProfileUpdate}
