@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"; // Ensure you have the correct import for your dialog components
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { firestore, auth } from "../../firebase/firebaseApp"; // Adjust the import path as needed
@@ -20,20 +20,23 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { joinServer } from "@/lib/joinserver";
 
-const ServerDialog = ({ user }) => {
+interface CreateServerPopupProps {
+  onServerUpdated: () => void;
+}
+const ServerDialog = ({ user, onServerUpdated }) => {
   const [step, setStep] = useState(0); // 0 for initial choice, 1 for create server, 2 for join server
   const [serverName, setServerName] = useState("");
   const [joinLink, setJoinLink] = useState("");
   const [open, setOpen] = useState(false);
-
+  console.log("USER LOGIN", user?.id);
   const handleCreateServer = async () => {
     // Logic to create server
     if (!serverName) return;
 
     try {
       // Create server document in Firestore
-      console.log(user?.id);
       const serverRef = await addDoc(collection(firestore, "servers"), {
         name: serverName,
         ownerId: user?.id,
@@ -62,6 +65,7 @@ const ServerDialog = ({ user }) => {
       // Reset state and close dialog after creation
       setStep(0);
       setServerName("");
+      onServerUpdated();
       setOpen(false);
     } catch (error) {
       console.error("Error creating server:", error);
@@ -70,14 +74,20 @@ const ServerDialog = ({ user }) => {
     setServerName("");
     setOpen(false);
   };
+  const handleJoinServer = async () => {
+    if (!joinLink) return;
 
-  const handleJoinServer = () => {
-    // Logic to join server
-    console.log("Joining server with link:", joinLink);
-    // Reset state and close dialog after joining
-    setStep(0);
-    setJoinLink("");
-    setOpen(false);
+    try {
+      await joinServer(joinLink, user);
+      setStep(0);
+      setJoinLink("");
+      setOpen(false);
+      onServerUpdated();
+    } catch (error) {
+      setStep(0);
+      setJoinLink("");
+      setOpen(false);
+    }
   };
 
   return (
@@ -103,13 +113,13 @@ const ServerDialog = ({ user }) => {
             <div className="grid gap-4 py-4">
               <Button
                 onClick={() => setStep(1)}
-                className="bg-form hover:bg-form/75"
+                className={buttonVariants({ variant: "form" })}
               >
                 Create Server
               </Button>
               <Button
                 onClick={() => setStep(2)}
-                className="bg-form hover:bg-form/75"
+                className={buttonVariants({ variant: "form" })}
               >
                 Join Server
               </Button>
@@ -148,7 +158,7 @@ const ServerDialog = ({ user }) => {
               </Button>
               <Button
                 onClick={() => setStep(0)}
-                className="bg-form hover:bg-form/75"
+                className={buttonVariants({ variant: "form" })}
               >
                 Back
               </Button>
@@ -180,13 +190,13 @@ const ServerDialog = ({ user }) => {
             <DialogFooter>
               <Button
                 onClick={handleJoinServer}
-                className="bg-form hover:bg-form/75"
+                className={buttonVariants({ variant: "form" })}
               >
                 Join Server
               </Button>
               <Button
                 onClick={() => setStep(0)}
-                className="bg-form hover:bg-form/75"
+                className={buttonVariants({ variant: "form" })}
               >
                 Back
               </Button>

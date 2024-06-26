@@ -7,22 +7,23 @@ interface IconProps {
     | "not-headphone"
     | "brush"
     | "eye"
-    | "shield";
+    | "shield"
+    | "member";
 }
 
 function Icon({ type }: IconProps) {
   if (type === "setting") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         width="24"
         height="24"
         viewBox="0 0 24 24"
-        stroke-width="2"
+        strokeWidth="2"
         stroke="currentColor"
         fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -34,13 +35,13 @@ function Icon({ type }: IconProps) {
   if (type === "mic") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />{" "}
@@ -53,13 +54,13 @@ function Icon({ type }: IconProps) {
   if (type === "headphone") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <path d="M3 18v-6a9 9 0 0 1 18 0v6" />{" "}
@@ -70,13 +71,13 @@ function Icon({ type }: IconProps) {
   if (type === "not-mic") {
     return (
       <svg
-        className="h-5 w-5 text-red-500"
+        className="h-5 w-5 text-destructive"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <line x1="1" y1="1" x2="23" y2="23" />{" "}
@@ -90,32 +91,39 @@ function Icon({ type }: IconProps) {
   if (type === "not-headphone") {
     return (
       <svg
-        className="h-5 w-5 text-red-500"
+        className="h-5 w-5 text-destructive"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
         <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-        <line x1="2" y1="2" x2="22" y2="22" stroke="red-500" stroke-width="2" />
+        <line
+          x1="2"
+          y1="2"
+          x2="22"
+          y2="22"
+          stroke="destext-destructive"
+          strokeWidth="2"
+        />
       </svg>
     );
   }
   if (type === "brush") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         width="24"
         height="24"
         viewBox="0 0 24 24"
-        stroke-width="2"
+        strokeWidth="2"
         stroke="currentColor"
         fill="none"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <path stroke="none" d="M0 0h24v24H0z" />{" "}
@@ -130,21 +138,21 @@ function Icon({ type }: IconProps) {
   if (type === "eye") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
           d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
         />
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
         />
       </svg>
@@ -153,16 +161,33 @@ function Icon({ type }: IconProps) {
   if (type === "shield") {
     return (
       <svg
-        className="h-5 w-5 text-white"
+        className="h-5 w-5 text-foreground"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         {" "}
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    );
+  }
+  if (type === "member") {
+    return (
+      <svg
+        className="h-5 w-5 text-foreground"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+        />
       </svg>
     );
   }

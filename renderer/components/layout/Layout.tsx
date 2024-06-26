@@ -5,47 +5,29 @@ import { getUserData } from "@/lib/retrieveuser";
 import ServerList from "./ServerList";
 import MainContent from "./MainContent";
 import { updateUserData } from "@/lib/updateuserdata";
-import { getAllServerDetails } from "@/lib/retrieveserver";
+import { getAllServerDetails, getTextChannels } from "@/lib/retrieveserver";
 
 const Layout = ({ children }) => {
   const [selectedServer, setSelectedServer] = useState<any>("DM");
-  const [selectedServerDetails, setSelectedServerDetails] = useState<any>(null);
+  const [selectedChannel, setSelectedChannel] = useState<any>(null);
+  const [selectedFriend, setSelectedFriend] = useState<any>(null);
   const [user, loading, error] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
-  const [servers, setServers] = useState<any[]>([]);
+  const [servers, setServers] = useState([]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const data = await getUserData(user.uid);
-        setUserData(data);
-        if (data?.serverList?.length > 0) {
-          console.log("AAAA", data?.serverList);
-          const serverDetails = await getAllServerDetails(data.serverList);
-          setServers(serverDetails);
-        }
+  const fetchUserData = async () => {
+    if (user) {
+      const data = await getUserData(user.uid);
+      setUserData(data);
+      if (data?.serverList?.length > 0) {
+        const serverDetails = await getAllServerDetails(data?.serverList);
+        setServers(serverDetails);
       }
-    };
+    }
+  };
+  useEffect(() => {
     fetchUserData();
   }, [user]);
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const data = await getUserData(user.uid);
-        setUserData(data);
-      }
-    };
-    fetchUserData();
-  }, [servers]);
-
-  useEffect(() => {
-    if (selectedServer && servers.length > 1) {
-      const serverDetails = servers.find(
-        (server) => server?.id === selectedServer
-      );
-      setSelectedServerDetails(serverDetails);
-    }
-  }, [selectedServer, servers]);
 
   const handleProfileUpdate = async (newData: any) => {
     if (user) {
@@ -65,18 +47,35 @@ const Layout = ({ children }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  const handleUpdateServer = () => {
+    fetchUserData();
+  };
+
+  const fetchChannels = async () => {
+    const fetchedTextChannels = await getTextChannels(selectedServer);
+    setSelectedChannel(fetchedTextChannels[0]);
+  };
+  useEffect(() => {
+    fetchChannels();
+  }, [selectedServer]);
+
   return (
     <div className="flex h-screen">
       <ServerList
         setSelectedServer={setSelectedServer}
         userData={userData}
         servers={servers}
+        onServerUpdated={handleUpdateServer}
       />
       <MainContent
         userData={userData}
         onProfileUpdate={handleProfileUpdate}
         onImageChange={handleImageChange}
         server={selectedServer}
+        selectedChannel={selectedChannel}
+        setSelectedChannel={setSelectedChannel}
+        selectedFriend={selectedFriend}
+        setSelectedFriend={setSelectedFriend}
       />
     </div>
   );

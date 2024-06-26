@@ -10,23 +10,34 @@ interface InfoSectionProps {
   onProfileUpdate: (newData: any) => void;
   onImageChange: (newImageURL: string) => void;
   selectedServer: any;
+  selectedChannel: any;
+  setSelectedChannel: (channel: any) => void;
+  setSelectedFriend: (friend: any) => void;
+  members: any;
 }
 
 const InfoSection = ({
   userData,
   onProfileUpdate,
   onImageChange,
-  selectedServer = "DM",
+  selectedServer,
+  selectedChannel,
+  setSelectedChannel,
+  setSelectedFriend,
+  members,
 }: InfoSectionProps) => {
-  console.log(selectedServer);
   return (
     <div className="flex flex-col h-full bg-secondary">
       <div className="flex-grow overflow-auto">
-        {selectedServer}
         {selectedServer === "DM" ? (
-          <DirectMessages />
+          <DirectMessages setSelectedFriend={setSelectedFriend} />
         ) : (
-          <ServerInformation selectedServer={selectedServer} />
+          <ServerInformation
+            selectedServer={selectedServer}
+            selectedChannel={selectedChannel}
+            setSelectedChannel={setSelectedChannel}
+            members={members}
+          />
         )}
       </div>
       <div className="">

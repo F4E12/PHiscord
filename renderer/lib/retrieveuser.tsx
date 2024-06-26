@@ -16,3 +16,40 @@ export const getUserData = async (userId: string) => {
     return null;
   }
 };
+
+export const getUsersInServer = async (serverId: string) => {
+  try {
+    console.log(`Fetching users for server ID: ${serverId}`);
+    const serverDocRef = doc(firestore, "servers", serverId);
+    const serverSnapshot = await getDoc(serverDocRef);
+
+    if (!serverSnapshot.exists()) {
+      console.error(`Server with ID ${serverId} does not exist.`);
+      return [];
+    }
+
+    const serverData = serverSnapshot.data();
+    console.log(`Server data:`, serverData);
+
+    if (serverData && serverData.members) {
+      const userRefs = serverData.members.map((userId: string) =>
+        doc(firestore, "users", userId)
+      );
+
+      const userSnapshots = await Promise.all(
+        userRefs.map((userRef: any) => getDoc(userRef))
+      );
+
+      const users = userSnapshots.map((snapshot) => snapshot.data());
+      console.log(`Fetched users:`, users);
+
+      return users;
+    }
+
+    console.warn(`Server with ID ${serverId} has no members.`);
+    return [];
+  } catch (error) {
+    console.error(`Error fetching users for server ID ${serverId}:`, error);
+    throw error;
+  }
+};

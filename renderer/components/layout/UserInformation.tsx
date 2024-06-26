@@ -39,9 +39,7 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
       <div className="flex items-center space-x-2">
         <div className="relative">
           <Avatar>
-            <AvatarImage
-              src={userData?.profilePicture || "/path-to-your-image.png"}
-            />
+            <AvatarImage src={userData?.profilePicture} />
             <AvatarFallback>
               {(userData?.displayname || "").charAt(0).toUpperCase()}
             </AvatarFallback>

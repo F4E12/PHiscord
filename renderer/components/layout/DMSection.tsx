@@ -1,16 +1,17 @@
-interface ChatSectionProps {
-  server: any;
+interface DMSectionProps {
+  friend: any;
 }
 
-const ChatSection = ({ server }: ChatSectionProps) => {
+const DMSection = ({ friend }: DMSectionProps) => {
   return (
     <div className="overflow-auto">
       {/* Chat content goes here */}
-      <h2 className="text-white">Chat {server?.name}</h2>
+      DM
+      {friend}
       <div className="chat-messages">{/* Render chat messages */}</div>
       <div className="chat-input">{/* Input for sending messages */}</div>
     </div>
   );
 };
 
-export default ChatSection;
+export default DMSection;

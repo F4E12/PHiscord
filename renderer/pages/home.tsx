@@ -17,14 +17,6 @@ const HomePage = () => {
   //error -> is there any error while loading current user
   const [user, loading, error] = useAuthState(auth);
 
-  const handleSignOut = async () => {
-    try {
-      await signOutUser();
-    } catch (error) {
-      console.error("Error signing out", error);
-    }
-  };
-
   return (
     <Layout>
       <Head>

@@ -4,6 +4,8 @@ import { auth } from "../../../firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { updateUserData } from "@/lib/updateuserdata";
 import { uploadImage } from "@/lib/uploadimage";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOutUser } from "@/lib/authentication";
 
 const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -68,11 +70,12 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
       </div>
       <div className="flex items-center mb-6">
         <div className="relative">
-          <img
-            src={localData?.profilePicture || "/path-to-your-image.png"} // Replace with actual image path
-            alt="User Avatar"
-            className="w-20 h-20 rounded-full"
-          />
+          <Avatar className="w-20 h-20">
+            <AvatarImage src={userData?.profilePicture} />
+            <AvatarFallback>
+              {(userData?.displayname || "").charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
           <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-gray-800 bg-green-500"></span>
         </div>
         <div className="ml-4">
