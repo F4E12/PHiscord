@@ -16,7 +16,7 @@ export const UserSetting = ({ userData, onProfileUpdate, onImageChange }) => {
   };
   const [selectedSetting, setSelectedSetting] = useState("general");
   return (
-    <div className="bg-primary absolute top-0 left-0 w-full h-full flex flex-row">
+    <div className="bg-primary absolute top-0 left-0 w-full h-full flex flex-row z-10">
       <SideBar setSelectedSetting={setSelectedSetting} />
       {selectedSetting === "general" ? (
         <GeneralSetting

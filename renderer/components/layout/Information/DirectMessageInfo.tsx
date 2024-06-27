@@ -5,7 +5,7 @@ interface DirectMessageProps {
   setSelectedFriend: (friend: any | null) => void;
 }
 
-const DirectMessages = ({ setSelectedFriend }: DirectMessageProps) => {
+const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
   const messages = [
     { name: "torpadeka", status: "online" },
     { name: "! Shrei", status: "offline" },
@@ -41,4 +41,4 @@ const DirectMessages = ({ setSelectedFriend }: DirectMessageProps) => {
   );
 };
 
-export default DirectMessages;
+export default DirectMessageInfo;

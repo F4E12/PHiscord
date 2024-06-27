@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase/firebaseApp";
 import { getUserData } from "@/lib/retrieveuser";
-import ServerList from "./ServerList";
+import ServerList from "./ServerList/ServerList";
 import MainContent from "./MainContent";
 import { updateUserData } from "@/lib/updateuserdata";
 import { getAllServerDetails, getTextChannels } from "@/lib/retrieveserver";

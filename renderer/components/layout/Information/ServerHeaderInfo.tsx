@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ServerSetting from "./ServerSetting/ServerSetting";
-import Icon from "../ui/icon";
+import ServerSetting from "../ServerSetting/ServerSetting";
+import Icon from "../../ui/icon";
 import ServerMember from "./ServerMember";
 
 interface ServerHeaderProps {
@@ -9,7 +9,11 @@ interface ServerHeaderProps {
   members: any;
 }
 
-function ServerHeader({ serverName, serverID, members }: ServerHeaderProps) {
+function ServerHeaderInfo({
+  serverName,
+  serverID,
+  members,
+}: ServerHeaderProps) {
   const [isOpenSetting, setisOpenSetting] = useState<boolean>(false);
   const [isOpenMemberList, setisOpenMemberList] = useState<boolean>(false);
   const toggleSetting = () => {
@@ -23,7 +27,7 @@ function ServerHeader({ serverName, serverID, members }: ServerHeaderProps) {
       {isOpenSetting && <ServerSetting serverName={serverID} />}
       {isOpenSetting && (
         <button
-          className="absolute right-0 top-0"
+          className="absolute right-0 top-0 z-10"
           onClick={() => toggleSetting()}
         >
           ✕
@@ -47,4 +51,4 @@ function ServerHeader({ serverName, serverID, members }: ServerHeaderProps) {
   );
 }
 
-export default ServerHeader;
+export default ServerHeaderInfo;

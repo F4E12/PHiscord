@@ -1,9 +1,9 @@
 import { ReactNode, useEffect, useState } from "react";
-import InfoSection from "@/components/layout/InfoSection";
-import ChatSection from "@/components/layout/ServerChat";
+import InfoSection from "@/components/layout/Information/InfoSection";
+import ChatSection from "@/components/layout/MainSection/Server/ServerChat";
 import { getServerDetails } from "@/lib/retrieveserver";
-import ServerChat from "@/components/layout/ServerChat";
-import DMSection from "./DMSection";
+import ServerChat from "@/components/layout/MainSection/Server/ServerChat";
+import DMSection from "./MainSection/DM/DMSection";
 import { getUsersInServer } from "@/lib/retrieveuser";
 import { firestore } from "@/firebase/firebaseApp";
 import { collection, doc, onSnapshot } from "firebase/firestore";

@@ -1,12 +1,12 @@
-import Separator from "../../components/ui/separator";
+import Separator from "../../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  TooltipServer,
+  TooltipServerContent,
+  TooltipServerProvider,
+  TooltipServerTrigger,
+} from "@/components/ui/tooltipserver";
 
 import CreateServerPopup from "./ServerDialog";
 import { useEffect, useState } from "react";
@@ -29,9 +29,9 @@ const ServerList = ({
   return (
     <div className="flex flex-col  bg-primary p-2 gap-2 overflow-auto no-scrollbar">
       <div className="" onClick={() => setSelectedServer("DM")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
+        <TooltipServerProvider>
+          <TooltipServer>
+            <TooltipServerTrigger asChild>
               <div
                 className="hover:cursor-pointer"
                 onClick={() => setSelectedServer("DM")}
@@ -41,16 +41,16 @@ const ServerList = ({
                   <AvatarFallback>PH</AvatarFallback>
                 </Avatar>
               </div>
-            </TooltipTrigger>
-            <TooltipContent>Direct Message</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </TooltipServerTrigger>
+            <TooltipServerContent>Direct Message</TooltipServerContent>
+          </TooltipServer>
+        </TooltipServerProvider>
       </div>
       <Separator />
       {servers.map((server, index) => (
-        <TooltipProvider key={index}>
-          <Tooltip>
-            <TooltipTrigger asChild>
+        <TooltipServerProvider key={index}>
+          <TooltipServer>
+            <TooltipServerTrigger asChild>
               <div
                 className="hover:cursor-pointer"
                 onClick={() => setSelectedServer(server.id)}
@@ -63,10 +63,10 @@ const ServerList = ({
                   {/* <AvatarFallback>{server?.charAt(0)}</AvatarFallback> */}
                 </Avatar>
               </div>
-            </TooltipTrigger>
-            <TooltipContent>{server?.name}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </TooltipServerTrigger>
+            <TooltipServerContent>{server?.name}</TooltipServerContent>
+          </TooltipServer>
+        </TooltipServerProvider>
       ))}
       <ServerDialog user={userData} onServerUpdated={onServerUpdated} />
     </div>

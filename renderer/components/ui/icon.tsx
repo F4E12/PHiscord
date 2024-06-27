@@ -8,7 +8,11 @@ interface IconProps {
     | "brush"
     | "eye"
     | "shield"
-    | "member";
+    | "member"
+    | "trash"
+    | "pen"
+    | "plus"
+    | "file";
 }
 
 function Icon({ type }: IconProps) {
@@ -188,6 +192,78 @@ function Icon({ type }: IconProps) {
           stroke-width="2"
           d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
         />
+      </svg>
+    );
+  }
+
+  if (type === "trash") {
+    return (
+      <svg
+        className="h-5 w-5 text-destructive"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+      </svg>
+    );
+  }
+  if (type === "pen") {
+    return (
+      <svg
+        className="h-5 w-5 text-foreground"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+        />
+      </svg>
+    );
+  }
+  if (type === "plus") {
+    return (
+      <svg
+        className="h-5 w-5 text-foreground"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    );
+  }
+  if (type === "file") {
+    return (
+      <svg
+        className="h-20 w-20 text-foreground"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        {" "}
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />{" "}
+        <polyline points="14 2 14 8 20 8" />{" "}
+        <line x1="16" y1="13" x2="8" y2="13" />{" "}
+        <line x1="16" y1="17" x2="8" y2="17" />{" "}
+        <polyline points="10 9 9 9 8 9" />
       </svg>
     );
   }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Icon from "../ui/icon";
-import { UserSetting } from "./UserSetting/UserSetting";
+import Icon from "../../ui/icon";
+import { UserSetting } from "../UserSetting/UserSetting";
 import { doc, setDoc } from "firebase/firestore";
 import { firestore, auth } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -79,7 +79,7 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
         )}
         {setting && (
           <button
-            className="absolute right-0 top-0"
+            className="absolute right-0 top-0 z-10"
             onClick={() => toogleSetting()}
           >
             ✕

@@ -1,9 +1,10 @@
 // components/InfoSection.tsx
 import React, { useEffect, useState } from "react";
-import DirectMessages from "./DirectMessages";
+import DirectMessages from "./DirectMessageInfo";
 import ServerInformation from "./ServerInformation";
 import UserInformation from "./UserInformation";
 import { getServerDetails } from "@/lib/retrieveserver";
+import DirectMessageInfo from "./DirectMessageInfo";
 
 interface InfoSectionProps {
   userData: any;
@@ -30,7 +31,7 @@ const InfoSection = ({
     <div className="flex flex-col h-full bg-secondary">
       <div className="flex-grow overflow-auto">
         {selectedServer === "DM" ? (
-          <DirectMessages setSelectedFriend={setSelectedFriend} />
+          <DirectMessageInfo setSelectedFriend={setSelectedFriend} />
         ) : (
           <ServerInformation
             selectedServer={selectedServer}
