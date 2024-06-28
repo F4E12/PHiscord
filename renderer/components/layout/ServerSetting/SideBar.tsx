@@ -25,6 +25,12 @@ export const SideBar = ({
         >
           <span>Roles</span>
         </div>
+        <div
+          className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer"
+          onClick={() => setSelectedSetting("general")}
+        >
+          <span>General Setting</span>
+        </div>
         <InvitePopup link={joinLink} />
       </div>
     </div>

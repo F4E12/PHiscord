@@ -16,11 +16,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../../ui/avatar";
 import Icon from "@/components/ui/icon";
 
 import {
-  TooltipTop,
-  TooltipTopContent,
-  TooltipTopProvider,
-  TooltipTopTrigger,
-} from "@/components/ui/tooltiptop";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -303,26 +303,26 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                   )}
                 </div>
                 <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
-                  <TooltipTopProvider>
-                    <TooltipTop>
-                      <TooltipTopTrigger asChild>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <button onClick={() => handleEditMessage(msg)}>
                           <Icon type="pen"></Icon>
                         </button>
-                      </TooltipTopTrigger>
-                      <TooltipTopContent>Edit</TooltipTopContent>
-                    </TooltipTop>
-                  </TooltipTopProvider>
-                  <TooltipTopProvider>
-                    <TooltipTop>
-                      <TooltipTopTrigger asChild>
+                      </TooltipTrigger>
+                      <TooltipContent>Edit</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <button onClick={() => handleDeleteMessage(msg)}>
                           <Icon type="trash"></Icon>
                         </button>
-                      </TooltipTopTrigger>
-                      <TooltipTopContent>Delete</TooltipTopContent>
-                    </TooltipTop>
-                  </TooltipTopProvider>
+                      </TooltipTrigger>
+                      <TooltipContent>Delete</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             ) : (
@@ -375,26 +375,26 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                   </div>
                 )}
                 <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
-                  <TooltipTopProvider>
-                    <TooltipTop>
-                      <TooltipTopTrigger asChild>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <button onClick={() => handleEditMessage(msg)}>
                           <Icon type="pen"></Icon>
                         </button>
-                      </TooltipTopTrigger>
-                      <TooltipTopContent>Edit</TooltipTopContent>
-                    </TooltipTop>
-                  </TooltipTopProvider>
-                  <TooltipTopProvider>
-                    <TooltipTop>
-                      <TooltipTopTrigger asChild>
+                      </TooltipTrigger>
+                      <TooltipContent>Edit</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <button onClick={() => handleDeleteMessage(msg)}>
                           <Icon type="trash"></Icon>
                         </button>
-                      </TooltipTopTrigger>
-                      <TooltipTopContent>Delete</TooltipTopContent>
-                    </TooltipTop>
-                  </TooltipTopProvider>
+                      </TooltipTrigger>
+                      <TooltipContent>Delete</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             )
@@ -458,16 +458,16 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         <div className="p-2 rounded bg-secondary">
           <div className="w-24 bg-primary p-2">
             <div className="relative flex justify-center mb-2">
-              <TooltipTopProvider>
-                <TooltipTop>
-                  <TooltipTopTrigger asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <button onClick={() => handleDeleteFile()}>
                       <Icon type="trash"></Icon>
                     </button>
-                  </TooltipTopTrigger>
-                  <TooltipTopContent>Delete</TooltipTopContent>
-                </TooltipTop>
-              </TooltipTopProvider>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <img
               src={filePreview as string}
@@ -482,16 +482,16 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         <div className="p-2 rounded bg-secondary">
           <div className="w-24 bg-primary p-2 flex flex-col justify-center">
             <div className="relative mb-2">
-              <TooltipTopProvider>
-                <TooltipTop>
-                  <TooltipTopTrigger asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <button onClick={() => handleDeleteFile()}>
                       <Icon type="trash"></Icon>
                     </button>
-                  </TooltipTopTrigger>
-                  <TooltipTopContent>Delete</TooltipTopContent>
-                </TooltipTop>
-              </TooltipTopProvider>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <Icon type="file"></Icon>
             <div className="text-xs">{truncateString(fileName, 12)}</div>

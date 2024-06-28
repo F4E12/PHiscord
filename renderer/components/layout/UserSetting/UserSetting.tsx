@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AppearanceSetting from "./AppearanceSetting";
-import GeneralSetting from "./GeneralSetting";
+import GeneralSetting from "./UserGeneralSetting";
 import OverlaySetting from "./OverlaySetting";
 import PrivacySetting from "./PrivacySetting";
 import { SideBar } from "./SideBar";

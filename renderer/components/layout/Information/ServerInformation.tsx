@@ -32,19 +32,20 @@ const ServerInformation = ({
   const [user] = useAuthState(auth);
 
   useEffect(() => {
-    const fetchServerDetails = async () => {
-      setLoading(true);
-      try {
-        const data = await getServerDetails(selectedServer);
-        setServerDetails(data);
-      } catch (error) {
-        console.log("ERROR");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchServerDetails();
   }, [selectedServer]);
+
+  const fetchServerDetails = async () => {
+    setLoading(true);
+    try {
+      const data = await getServerDetails(selectedServer);
+      setServerDetails(data);
+    } catch (error) {
+      console.log("ERROR");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const channelsCollectionRef = collection(
@@ -59,6 +60,32 @@ const ServerInformation = ({
         fetchChannels();
       }
     );
+
+    return () => unsubscribeChannels();
+  }, [selectedServer]);
+
+  useEffect(() => {
+    const channelsCollectionRef = collection(
+      firestore,
+      "servers",
+      selectedServer,
+      "voiceChannels"
+    );
+    const unsubscribeChannels = onSnapshot(
+      channelsCollectionRef,
+      (snapshot) => {
+        fetchChannels();
+      }
+    );
+
+    return () => unsubscribeChannels();
+  }, [selectedServer]);
+
+  useEffect(() => {
+    const channelsDocRef = doc(firestore, "servers", selectedServer);
+    const unsubscribeChannels = onSnapshot(channelsDocRef, (snapshot) => {
+      fetchServerDetails();
+    });
 
     return () => unsubscribeChannels();
   }, [selectedServer]);
@@ -131,7 +158,8 @@ const ServerInformation = ({
               </div>
             </div>
             <div className="">
-              {user.uid === serverDetails.ownerId && (
+              {(user.uid === serverDetails.ownerId ||
+                serverDetails.admin.includes(user.uid)) && (
                 <CreateChannelPopup serverId={selectedServer} />
               )}
             </div>

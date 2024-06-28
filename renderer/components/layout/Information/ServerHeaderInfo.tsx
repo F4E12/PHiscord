@@ -24,7 +24,7 @@ function ServerHeaderInfo({
   };
   return (
     <>
-      {isOpenSetting && <ServerSetting serverName={serverID} />}
+      {isOpenSetting && <ServerSetting serverId={serverID} members={members} />}
       {isOpenSetting && (
         <button
           className="absolute right-0 top-0 z-10"
@@ -33,8 +33,10 @@ function ServerHeaderInfo({
           ✕
         </button>
       )}
-      <div className="absolute right-0">
-        {isOpenMemberList && <ServerMember members={members} />}
+      <div className="absolute right-0 z-10">
+        {isOpenMemberList && (
+          <ServerMember members={members} serverId={serverID} />
+        )}
       </div>
       <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center">
         {serverName}

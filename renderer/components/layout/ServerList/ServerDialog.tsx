@@ -21,6 +21,7 @@ import {
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { joinServer } from "@/lib/joinserver";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface CreateServerPopupProps {
   onServerUpdated: () => void;
@@ -30,6 +31,9 @@ const ServerDialog = ({ user, onServerUpdated }) => {
   const [serverName, setServerName] = useState("");
   const [joinLink, setJoinLink] = useState("");
   const [open, setOpen] = useState(false);
+  const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(
+    null
+  );
   console.log("USER LOGIN", user?.id);
   const handleCreateServer = async () => {
     // Logic to create server
@@ -90,6 +94,16 @@ const ServerDialog = ({ user, onServerUpdated }) => {
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilePreview("");
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result);
+      };
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -148,6 +162,23 @@ const ServerDialog = ({ user, onServerUpdated }) => {
                   className="col-span-3"
                 />
               </div>
+            </div>
+            <div className="flex gap-3">
+              <Avatar>
+                <AvatarImage
+                  src={
+                    (filePreview as string) || "https://github.com/shadcn.png"
+                  }
+                  alt="@shadcn"
+                />
+                {/* <AvatarFallback>{server?.charAt(0)}</AvatarFallback> */}
+              </Avatar>
+              <input
+                type="file"
+                name="profilePicture"
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+                onChange={handleFileChange}
+              />
             </div>
             <DialogFooter>
               <Button

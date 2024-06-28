@@ -3,17 +3,21 @@ import Roles from "./Roles";
 import { signOutUser } from "@/lib/authentication";
 import SideBar from "./SideBar";
 import InvitePopup from "./InvitePopup";
+import GeneralSettings from "./ServerGeneralSetting";
 
 interface ServerSettingProps {
-  serverName: any;
+  serverId: any;
+  members: any;
 }
-export const ServerSetting = ({ serverName }: ServerSettingProps) => {
+export const ServerSetting = ({ serverId, members }: ServerSettingProps) => {
   const [selectedSetting, setSelectedSetting] = useState("general");
-  let joinLink = "phiscord.join/" + serverName;
   return (
     <div className="bg-primary absolute top-0 left-0 w-full h-full flex flex-row z-10">
-      <SideBar setSelectedSetting={setSelectedSetting} serverId={serverName} />
-      {selectedSetting === "roles" ? <Roles /> : null}
+      <SideBar setSelectedSetting={setSelectedSetting} serverId={serverId} />
+      {selectedSetting === "roles" ? (
+        <Roles serverId={serverId} members={members} />
+      ) : null}
+      {/* {selectedSetting === "general" ? <GeneralSettings /> : null} */}
     </div>
   );
 };

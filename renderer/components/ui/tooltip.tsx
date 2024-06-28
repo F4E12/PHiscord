@@ -1,21 +1,21 @@
 import * as React from "react";
-import * as TooltipTopPrimitive from "@radix-ui/react-Tooltip";
+import * as TooltipPrimitive from "@radix-ui/react-Tooltip";
 
 import { cn } from "@/lib/utils";
 
-const TooltipTopProvider = TooltipTopPrimitive.Provider;
+const TooltipProvider = TooltipPrimitive.Provider;
 
-const TooltipTop = (props) => (
-  <TooltipTopPrimitive.Root delayDuration={0} {...props} />
+const Tooltip = (props) => (
+  <TooltipPrimitive.Root delayDuration={0} {...props} />
 );
 
-const TooltipTopTrigger = TooltipTopPrimitive.Trigger;
+const TooltipTrigger = TooltipPrimitive.Trigger;
 
-const TooltipTopContent = React.forwardRef<
-  React.ElementRef<typeof TooltipTopPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipTopPrimitive.Content>
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
 >(({ className, side = "top", sideOffset = 4, ...props }, ref) => (
-  <TooltipTopPrimitive.Content
+  <TooltipPrimitive.Content
     ref={ref}
     side={side}
     sideOffset={sideOffset}
@@ -26,6 +26,6 @@ const TooltipTopContent = React.forwardRef<
     {...props}
   />
 ));
-TooltipTopContent.displayName = TooltipTopPrimitive.Content.displayName;
+TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-export { TooltipTop, TooltipTopTrigger, TooltipTopContent, TooltipTopProvider };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
