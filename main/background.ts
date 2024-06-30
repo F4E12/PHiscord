@@ -1,7 +1,10 @@
 import path from 'path'
-import { app, ipcMain } from 'electron'
+import { app, ipcMain, Tray, Menu, nativeImage } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
+
+let mainWindow;
+let tray
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -12,9 +15,24 @@ if (isProd) {
 }
 
 ;(async () => {
-  await app.whenReady()
+  await app.whenReady().then(() => {
+    const iconPath = path.join(__dirname, '../renderer/public/images/PHiscordLogoNOBG.png');
+    const icon = nativeImage.createFromPath(iconPath);
+    tray = new Tray(icon);
 
-  const mainWindow = createWindow('main', {
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open PHiscord', click: () => mainWindow.show() },
+      { label: 'Toggle Mute', click: toggleMute },
+      { label: 'Toggle Deafen', click: toggleDeafen },
+      { type: 'separator' },
+      { label: 'Quit', click: quitApp }
+    ]);
+
+    tray.setToolTip('PHiscord');
+    tray.setContextMenu(contextMenu);
+  });
+
+  mainWindow = createWindow('main', {
     width: 1000,
     height: 600,
     webPreferences: {
@@ -40,3 +58,15 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
+
+function toggleMute() {
+  console.log('Toggling mute');
+}
+
+function toggleDeafen() {
+  console.log('Toggling deafen');
+}
+
+function quitApp() {
+  app.quit();
+}

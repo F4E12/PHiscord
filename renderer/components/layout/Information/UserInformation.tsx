@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import Icon from "../../ui/icon";
 import { UserSetting } from "../UserSetting/UserSetting";
 import { doc, setDoc } from "firebase/firestore";
-import { firestore, auth } from "@/firebase/firebaseApp";
+import { firestore, auth, database } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserData } from "@/lib/retrieveuser";
+import { ref, onValue, set } from "firebase/database";
 
 export const updateUserData = async (userId: string, data: any) => {
   try {
@@ -19,21 +20,38 @@ export const updateUserData = async (userId: string, data: any) => {
 };
 
 function UserInformation({ userData, onProfileUpdate, onImageChange }) {
-  // const [user, loading, error] = useAuthState(auth);
   const [mute, setMute] = useState(false);
   const [deafen, setDeafen] = useState(false);
   const [setting, setSetting] = useState(false);
+  const [previousMuteState, setPreviousMuteState] = useState(false);
+  const [user] = useAuthState(auth);
 
-  const toogleMute = () => {
-    setMute(!mute);
+  useEffect(() => {
+    if (deafen) {
+      setPreviousMuteState(mute);
+      if (!mute) {
+        setMute(true);
+      }
+    } else {
+      setMute(previousMuteState);
+    }
+  }, [deafen]);
+
+  const toggleMute = () => {
+    if (!deafen) {
+      setMute(!mute);
+    }
   };
-  const toogleDeafen = () => {
+
+  const toggleDeafen = () => {
     setDeafen(!deafen);
   };
-  const toogleSetting = () => {
+
+  const toggleSetting = () => {
     console.log(userData);
     setSetting(!setting);
   };
+
   return (
     <div className="w-64 flex items-center justify-between p-2 bg-gray-900 rounded-md max-w-sm bottom-0">
       <div className="flex items-center space-x-2">
@@ -53,21 +71,17 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button className="" onClick={() => toogleMute()}>
-          {mute || deafen ? (
-            <Icon type="not-mic"></Icon>
-          ) : (
-            <Icon type="mic"></Icon>
-          )}
+        <button className="" onClick={() => toggleMute()}>
+          {mute ? <Icon type="not-mic"></Icon> : <Icon type="mic"></Icon>}
         </button>
-        <button className="" onClick={() => toogleDeafen()}>
+        <button className="" onClick={() => toggleDeafen()}>
           {deafen ? (
             <Icon type="not-headphone"></Icon>
           ) : (
             <Icon type="headphone"></Icon>
           )}
         </button>
-        <button className="" onClick={() => toogleSetting()}>
+        <button className="" onClick={() => toggleSetting()}>
           <Icon type="setting"></Icon>
         </button>
         {setting && (
@@ -80,7 +94,7 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
         {setting && (
           <button
             className="absolute right-0 top-0 z-10"
-            onClick={() => toogleSetting()}
+            onClick={() => toggleSetting()}
           >
             ✕
           </button>
