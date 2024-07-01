@@ -10,6 +10,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  getDoc,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../ui/avatar";
@@ -64,17 +65,39 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
   const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(
     null
   );
+  const [serverName, setServerName] = useState("");
+  const lastNotifiedMessageId = useRef(null);
+  const lastCheckedTimeRef = useRef(Date.now());
   const [user] = useAuthState(auth);
+
+  useEffect(() => {
+    const serverRef = doc(firestore, "servers", server);
+
+    // onSnapshot listens for real-time updates to the server document
+    const unsubscribe = onSnapshot(
+      serverRef,
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          setServerName(data.name); // Update state if document data changes
+        } else {
+          console.log("No such server!");
+        }
+      },
+      (error) => {
+        console.error("Error listening to server changes:", error);
+      }
+    );
+
+    // Cleanup listener when the component unmounts or serverId changes
+    return () => unsubscribe();
+  }, [server]);
 
   function truncateString(str, num) {
     if (str.length <= num) {
       return str;
     }
     return str.slice(0, num) + "...";
-  }
-
-  function previewImage(img) {
-    return <div className="absolute bg-black z-100">AAAA</div>;
   }
 
   const dummy = useRef<HTMLDivElement>(null);
@@ -89,17 +112,58 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        let msgs: any[] = [];
+        let newMessages = [];
         querySnapshot.forEach((doc) => {
-          msgs.push({ ...doc.data(), id: doc.id });
+          newMessages.push({ ...doc.data(), id: doc.id });
         });
-        setMessages(msgs);
+
+        newMessages.forEach((message) => {
+          if (
+            message.createdAt &&
+            message.createdAt.toMillis() > lastCheckedTimeRef.current &&
+            message.uid !== user?.uid
+          ) {
+            notify(message);
+          }
+        });
+
+        if (newMessages.length > 0) {
+          lastCheckedTimeRef.current = Date.now(); // Update last checked time
+        }
+        // Update the messages state
+        setMessages(newMessages);
+        const lastMessage = newMessages[newMessages.length - 1];
+
         dummy.current?.scrollIntoView({ behavior: "smooth" });
       });
 
       return () => unsubscribe();
     }
   }, [channel]);
+
+  const notify = (message) => {
+    if (Notification.permission === "granted") {
+      new Notification(
+        members[message.uid]?.displayname + " (" + channel.name + ")",
+        {
+          body: message.text,
+          icon: members[message.uid]?.profilePicture,
+        }
+      );
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(
+            members[message.uid]?.displayname + " (" + channel.name + ")",
+            {
+              body: message.text,
+              icon: members[message.uid]?.profilePicture,
+            }
+          );
+        }
+      });
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileURL("");
@@ -244,7 +308,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
             checkBefore(msg.uid) ? (
               <div
                 key={msg.id}
-                className="relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60 p-1"
+                className="relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60"
               >
                 <Avatar className="">
                   <AvatarImage

@@ -16,6 +16,7 @@ if (isProd) {
 
 ;(async () => {
   await app.whenReady().then(() => {
+    app.setName('PHiscord');
     const iconPath = path.join(__dirname, '../renderer/public/images/PHiscordLogoNOBG.png');
     const icon = nativeImage.createFromPath(iconPath);
     tray = new Tray(icon);
