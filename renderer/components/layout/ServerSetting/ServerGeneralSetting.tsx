@@ -1,17 +1,41 @@
 import { getUserData } from "@/lib/retrieveuser";
 import React, { useEffect, useState } from "react";
-import { auth } from "../../../firebase/firebaseApp";
+import { auth, firestore } from "../../../firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { updateUserData } from "@/lib/updateuserdata";
 import { uploadImage } from "@/lib/uploadimage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOutUser } from "@/lib/authentication";
+import { doc, onSnapshot } from "firebase/firestore";
+import { updateServerData } from "@/lib/updateserverdata";
 
-const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
+const GeneralSettings = ({ serverId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [counter, setCounter] = useState(0);
-  const [localData, setLocalData] = useState(userData);
+  const [localData, setLocalData] = useState(serverId);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [serverDetail, setServerDetail] = useState<any>();
+
+  useEffect(() => {
+    const serverRef = doc(firestore, "servers", serverId);
+
+    const unsubscribe = onSnapshot(
+      serverRef,
+      (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          setServerDetail(data);
+          setLocalData(data);
+        } else {
+          console.log("No such server!");
+        }
+      },
+      (error) => {
+        console.error("Error listening to server changes:", error);
+      }
+    );
+    return () => unsubscribe();
+  }, [serverId]);
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -37,20 +61,23 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
       }));
     }
   };
-
   const handleSubmit = async (e) => {
     setCounter(0);
     e.preventDefault();
     console.log("UPDAE");
     try {
-      const downloadURL = await uploadImage(selectedFile, userData.uid);
-      const updatedData = {
-        ...localData,
-        profilePicture: downloadURL,
-      };
-      onProfileUpdate(updatedData);
-      onImageChange(downloadURL);
+      let updatedData = localData;
+      let downloadURL;
+      if (selectedFile) {
+        downloadURL = await uploadImage(selectedFile, serverId);
+        updatedData = {
+          ...localData,
+          profilePicture: downloadURL,
+        };
+      }
+      console.log(updatedData);
       console.log(downloadURL);
+      await updateServerData(serverId, updatedData);
     } catch (error) {
       console.error("Error uploading image:", error);
     }
@@ -65,30 +92,33 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
           onClick={handleEditClick}
           className="px-4 py-2 bg-form text-white rounded hover:bg-blue-700"
         >
-          {isEditing ? "Save" : "Edit User Profile"}
+          {isEditing ? "Save" : "Edit Server Profile"}
         </button>
       </div>
-      <div className="flex items-center mb-6">
-        <div className="relative">
-          <Avatar className="w-20 h-20">
-            <AvatarImage src={userData?.profilePicture} />
-            <AvatarFallback>
-              {(userData?.displayname || "").charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-gray-800 bg-green-500"></span>
-        </div>
-        <div className="ml-4">
-          <div className="text-white text-xl font-semibold">
-            {localData?.username}
-          </div>
-          <div className="text-gray-400 text-sm flex items-center">
-            <span>#</span>
-            <span>1234</span>
-          </div>
-        </div>
-      </div>
       <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="flex items-center mb-6">
+          <div className="relative">
+            <Avatar className="w-20 h-20">
+              <AvatarImage src={localData?.profilePicture} />
+              <AvatarFallback>
+                {(localData?.name || "").charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-gray-800 bg-green-500"></span>
+          </div>
+          <div className="ml-6">
+            <label className="block text-gray-400 mb-2">Server Name</label>
+            <input
+              type="text"
+              name="name"
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+              placeholder="Your display name"
+              value={localData?.name || ""}
+              onChange={handleChange}
+              readOnly={!isEditing}
+            />
+          </div>
+        </div>
         <div>
           <label className="block text-gray-400 mb-2">Profile Picture</label>
           <input

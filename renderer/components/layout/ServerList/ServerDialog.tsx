@@ -22,11 +22,16 @@ import {
 import { useAuthState } from "react-firebase-hooks/auth";
 import { joinServer } from "@/lib/joinserver";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { uploadImage } from "@/lib/uploadimage";
+import { profile } from "console";
 
 interface CreateServerPopupProps {
-  onServerUpdated: () => void;
+  // onServerUpdated: () => void;
 }
-const ServerDialog = ({ user, onServerUpdated }) => {
+const ServerDialog = ({
+  user,
+  // onServerUpdated
+}) => {
   const [step, setStep] = useState(0); // 0 for initial choice, 1 for create server, 2 for join server
   const [serverName, setServerName] = useState("");
   const [joinLink, setJoinLink] = useState("");
@@ -34,6 +39,7 @@ const ServerDialog = ({ user, onServerUpdated }) => {
   const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(
     null
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   console.log("USER LOGIN", user?.id);
   const handleCreateServer = async () => {
     // Logic to create server
@@ -49,6 +55,11 @@ const ServerDialog = ({ user, onServerUpdated }) => {
       });
 
       const serverId = serverRef.id;
+      const downloadURL = await uploadImage(selectedFile, serverId);
+
+      await updateDoc(doc(firestore, "servers", serverId), {
+        profilePicture: downloadURL,
+      });
 
       await addDoc(collection(firestore, `servers/${serverId}/textChannels`), {
         name: "General",
@@ -69,7 +80,7 @@ const ServerDialog = ({ user, onServerUpdated }) => {
       // Reset state and close dialog after creation
       setStep(0);
       setServerName("");
-      onServerUpdated();
+      // onServerUpdated();
       setOpen(false);
     } catch (error) {
       console.error("Error creating server:", error);
@@ -86,7 +97,7 @@ const ServerDialog = ({ user, onServerUpdated }) => {
       setStep(0);
       setJoinLink("");
       setOpen(false);
-      onServerUpdated();
+      // onServerUpdated();
     } catch (error) {
       setStep(0);
       setJoinLink("");
@@ -98,10 +109,9 @@ const ServerDialog = ({ user, onServerUpdated }) => {
     setFilePreview("");
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result);
-      };
+      setSelectedFile(file);
+      setFilePreview(URL.createObjectURL(file));
+      console.log("IMAGES", URL.createObjectURL(file));
     }
   };
   return (

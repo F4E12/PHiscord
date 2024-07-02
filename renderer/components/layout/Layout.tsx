@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../firebase/firebaseApp";
+import { auth, firestore } from "../../firebase/firebaseApp";
 import { getUserData } from "@/lib/retrieveuser";
 import ServerList from "./ServerList/ServerList";
 import MainContent from "./MainContent";
 import { updateUserData } from "@/lib/updateuserdata";
 import { getAllServerDetails, getTextChannels } from "@/lib/retrieveserver";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const Layout = ({ children }) => {
   const [selectedServer, setSelectedServer] = useState<any>("DM");
@@ -25,6 +26,31 @@ const Layout = ({ children }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = onSnapshot(
+        doc(firestore, "users", user.uid),
+        (doc) => {
+          fetchUserData();
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = onSnapshot(
+        doc(firestore, "servers", selectedServer),
+        (doc) => {
+          fetchUserData();
+        }
+      );
+      return () => unsubscribe();
+    }
+  }, [selectedServer]);
+
   useEffect(() => {
     fetchUserData();
   }, [user]);
@@ -47,9 +73,9 @@ const Layout = ({ children }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const handleUpdateServer = () => {
-    fetchUserData();
-  };
+  // const handleUpdateServer = () => {
+  //   fetchUserData();
+  // };
 
   const fetchChannels = async () => {
     const fetchedTextChannels = await getTextChannels(selectedServer);
@@ -65,7 +91,7 @@ const Layout = ({ children }) => {
         setSelectedServer={setSelectedServer}
         userData={userData}
         servers={servers}
-        onServerUpdated={handleUpdateServer}
+        // onServerUpdated={handleUpdateServer}
       />
       <MainContent
         userData={userData}

@@ -17,7 +17,9 @@ export const ServerSetting = ({ serverId, members }: ServerSettingProps) => {
       {selectedSetting === "roles" ? (
         <Roles serverId={serverId} members={members} />
       ) : null}
-      {/* {selectedSetting === "general" ? <GeneralSettings /> : null} */}
+      {selectedSetting === "general" ? (
+        <GeneralSettings serverId={serverId} />
+      ) : null}
     </div>
   );
 };

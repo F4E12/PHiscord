@@ -7,6 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserData } from "@/lib/retrieveuser";
 import { ref, onValue, set } from "firebase/database";
+import useUserPresence from "@/lib/useUserPresence";
 
 export const updateUserData = async (userId: string, data: any) => {
   try {
@@ -25,6 +26,7 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
   const [setting, setSetting] = useState(false);
   const [previousMuteState, setPreviousMuteState] = useState(false);
   const [user] = useAuthState(auth);
+  const presence = useUserPresence(user?.uid);
 
   useEffect(() => {
     if (deafen) {
@@ -67,7 +69,11 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
           <span className="text-white text-sm font-semibold">
             {userData?.displayname}
           </span>
-          <span className="text-gray-400 text-xs">:D</span>
+          <span className="text-gray-400 text-xs">
+            {userData?.customStatus ||
+              (presence ? "online" : "offline") ||
+              "gada"}
+          </span>
         </div>
       </div>
       <div className="flex items-center gap-3">

@@ -16,14 +16,14 @@ import ServerDialog from "./ServerDialog";
 interface ServerListProps {
   userData: any;
   setSelectedServer: (server: any | null) => void;
-  onServerUpdated: () => void;
+  // onServerUpdated: () => void;
   servers: any;
 }
 
 const ServerList = ({
   userData,
   setSelectedServer,
-  onServerUpdated,
+  // onServerUpdated,
   servers,
 }: ServerListProps) => {
   return (
@@ -56,11 +56,8 @@ const ServerList = ({
                 onClick={() => setSelectedServer(server.id)}
               >
                 <Avatar>
-                  <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
-                  />
-                  {/* <AvatarFallback>{server?.charAt(0)}</AvatarFallback> */}
+                  <AvatarImage src={server.profilePicture} alt="@shadcn" />
+                  <AvatarFallback>{server?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
             </TooltipServerTrigger>
@@ -68,7 +65,10 @@ const ServerList = ({
           </TooltipServer>
         </TooltipServerProvider>
       ))}
-      <ServerDialog user={userData} onServerUpdated={onServerUpdated} />
+      <ServerDialog
+        user={userData}
+        // onServerUpdated={onServerUpdated}
+      />
     </div>
   );
 };

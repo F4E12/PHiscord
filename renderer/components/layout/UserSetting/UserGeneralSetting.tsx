@@ -6,6 +6,8 @@ import { updateUserData } from "@/lib/updateuserdata";
 import { uploadImage } from "@/lib/uploadimage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOutUser } from "@/lib/authentication";
+import StatusForm from "./StatusForm";
+import Separator from "../../ui/separator";
 
 const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -43,11 +45,15 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
     e.preventDefault();
     console.log("UPDAE");
     try {
-      const downloadURL = await uploadImage(selectedFile, userData.uid);
-      const updatedData = {
-        ...localData,
-        profilePicture: downloadURL,
-      };
+      let updatedData = localData;
+      let downloadURL;
+      if (selectedFile) {
+        downloadURL = await uploadImage(selectedFile, userData.uid);
+        updatedData = {
+          ...localData,
+          profilePicture: downloadURL,
+        };
+      }
       onProfileUpdate(updatedData);
       onImageChange(downloadURL);
       console.log(downloadURL);
@@ -58,7 +64,7 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-800 rounded-md shadow-md w-full max-w-2xl mx-auto">
+    <div className="p-6 bg-gray-800 rounded-md shadow-md w-full max-w-2xl mx-auto overflow-auto">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl text-white font-semibold">General Settings</h2>
         <button
@@ -143,6 +149,10 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
           </button>
         )}
       </form>
+      <div className="mt-5">
+        <Separator />
+        <StatusForm userData={userData}></StatusForm>
+      </div>
     </div>
   );
 };
