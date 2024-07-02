@@ -70,9 +70,9 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
             {userData?.displayname}
           </span>
           <span className="text-gray-400 text-xs">
-            {userData?.customStatus ||
+            {userData?.status ||
               (presence ? "online" : "offline") ||
-              "gada"}
+              "No Status"}
           </span>
         </div>
       </div>
