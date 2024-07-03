@@ -26,11 +26,13 @@ const HomePage = () => {
   }, [user]);
 
   return (
-    <Layout>
-      <Head>
-        <title>PHiscord - Home Page</title>
-      </Head>
-    </Layout>
+    <div className="">
+      <Layout>
+        <Head>
+          <title>PHiscord - Home Page</title>
+        </Head>
+      </Layout>
+    </div>
   );
 };
 

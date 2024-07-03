@@ -6,17 +6,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 
 function MyApp({ Component, pageProps }: AppProps) {
-    return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <Component {...pageProps} />
-            <Toaster />
-        </ThemeProvider>
-    );
+  return (
+    <div className="">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <Component {...pageProps} />
+        <Toaster />
+      </ThemeProvider>
+    </div>
+  );
 }
 
 export default MyApp;

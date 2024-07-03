@@ -62,6 +62,7 @@ const OnlineFriends: React.FC = () => {
           })
         );
         setOnlineFriends(friends.filter((friend) => friend !== null));
+        console.log(onlineFriends);
       }
     };
 
@@ -73,7 +74,7 @@ const OnlineFriends: React.FC = () => {
       <h2>Online Friends</h2>
       <ul>
         {onlineFriends.map((friend) => (
-          <li key={friend.id}>{friend.displayName}</li>
+          <li key={friend.id}>{friend.displayname}</li>
         ))}
       </ul>
     </div>
