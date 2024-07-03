@@ -1,3 +1,5 @@
+import DMMenu from "./DMMenu";
+
 interface DMSectionProps {
   friend: any;
 }
@@ -6,10 +8,15 @@ const DMSection = ({ friend }: DMSectionProps) => {
   return (
     <div className="overflow-auto">
       {/* Chat content goes here */}
-      DM
       {friend}
-      <div className="chat-messages">{/* Render chat messages */}</div>
-      <div className="chat-input">{/* Input for sending messages */}</div>
+      {friend === "friendMenu" ? (
+        <DMMenu />
+      ) : (
+        <div className="">
+          <div className="chat-messages">CHATTING</div>
+          <div className="chat-input">KIRIM</div>
+        </div>
+      )}
     </div>
   );
 };
