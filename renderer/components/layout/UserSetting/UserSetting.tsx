@@ -5,13 +5,29 @@ import OverlaySetting from "./OverlaySetting";
 import PrivacySetting from "./PrivacySetting";
 import { SideBar } from "./SideBar";
 import { signOutUser } from "@/lib/authentication";
+import { getAuth } from "firebase/auth";
+import { database } from "@/firebase/firebaseApp";
+import { ref, serverTimestamp, set } from "firebase/database";
 
 export const UserSetting = ({ userData, onProfileUpdate, onImageChange }) => {
   const handleSignOut = async () => {
-    try {
-      await signOutUser();
-    } catch (error) {
-      console.error("Error signing out", error);
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      const userPresenceDatabaseRef = ref(database, `presence/${user.uid}`);
+      const isOfflineForDatabase = {
+        online: false,
+        last_changed: serverTimestamp(),
+      };
+
+      // Set presence to offline
+      await set(userPresenceDatabaseRef, isOfflineForDatabase);
+      try {
+        await signOutUser();
+      } catch (error) {
+        console.error("Error signing out", error);
+      }
     }
   };
   const [selectedSetting, setSelectedSetting] = useState("general");

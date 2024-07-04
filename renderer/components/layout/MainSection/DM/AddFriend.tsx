@@ -2,15 +2,21 @@ import React, { useState } from "react";
 import { firestore, auth } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { useToast } from "@/components/ui/use-toast";
 
 const AddFriend: React.FC = () => {
   const [user] = useAuthState(auth);
   const [targetUserId, setTargetUserId] = useState("");
+  const { toast } = useToast();
 
   const handleSendRequest = async () => {
     if (!user || !targetUserId) return;
     if (user.uid === targetUserId) {
-      alert("You cannot add yourself as a friend.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You cannot add yourself as a friend.",
+      });
       return;
     }
 
@@ -28,7 +34,11 @@ const AddFriend: React.FC = () => {
         userData.friends &&
         userData.friends.includes(targetUserId)
       ) {
-        alert("You are already friends with this user.");
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "You are already friends with this user.",
+        });
         return;
       }
 
@@ -42,7 +52,11 @@ const AddFriend: React.FC = () => {
         targetUserData.friendRequests &&
         targetUserData.friendRequests.includes(user.uid)
       ) {
-        alert("This user has already sent you a friend request.");
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "This user has already sent you a friend request.",
+        });
         return;
       }
 
@@ -51,10 +65,18 @@ const AddFriend: React.FC = () => {
         friendRequests: arrayUnion(user.uid),
       });
 
-      alert("Friend request sent successfully.");
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Friend request sent successfully.",
+      });
     } catch (error) {
       console.error("Error sending friend request:", error);
-      alert("Error sending friend request.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error sending friend request.",
+      });
     }
   };
 

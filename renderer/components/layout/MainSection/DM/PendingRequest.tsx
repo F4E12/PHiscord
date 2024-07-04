@@ -9,10 +9,12 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+import { useToast } from "@/components/ui/use-toast";
 
 const PendingRequests: React.FC = () => {
   const [user] = useAuthState(auth);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -48,10 +50,17 @@ const PendingRequests: React.FC = () => {
         friends: arrayUnion(user.uid),
       });
 
-      alert("Friend request accepted.");
+      toast({
+        variant: "default",
+        title: "Friend request accepted.",
+      });
     } catch (error) {
       console.error("Error accepting friend request:", error);
-      alert("Error accepting friend request.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error accepting friend request.",
+      });
     }
   };
 
@@ -65,26 +74,44 @@ const PendingRequests: React.FC = () => {
         friendRequests: arrayRemove(senderUserId),
       });
 
-      alert("Friend request rejected.");
+      toast({
+        variant: "destructive",
+        title: "Friend request rejected.",
+      });
     } catch (error) {
       console.error("Error rejecting friend request:", error);
-      alert("Error rejecting friend request.");
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error rejecting friend request.",
+      });
     }
   };
 
   return (
-    <div>
-      <h2>Pending Requests</h2>
+    <div className="p-4 max-w-md mx-auto bg-card text-card-foreground rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">Pending Requests</h2>
       <ul>
         {pendingRequests.map((request) => (
-          <li key={request.id}>
-            {request.displayname}
-            <button onClick={() => handleAcceptRequest(request.id)}>
-              Accept
-            </button>
-            <button onClick={() => handleRejectRequest(request.id)}>
-              Reject
-            </button>
+          <li
+            key={request.id}
+            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
+          >
+            <span>{request.displayname}</span>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleAcceptRequest(request.id)}
+                className="text-sm px-2 py-1 bg-form text-foreground rounded-md hover:bg-form/80 focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => handleRejectRequest(request.id)}
+                className="text-sm px-2 py-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover focus:outline-none focus:ring-2 focus:ring-destructive"
+              >
+                Reject
+              </button>
+            </div>
           </li>
         ))}
       </ul>

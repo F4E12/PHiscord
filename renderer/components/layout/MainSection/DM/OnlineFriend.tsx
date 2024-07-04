@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { firestore, auth, database } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, off } from "firebase/database";
 import useUserPresence from "@/lib/useUserPresence";
+import { useToast } from "@/components/ui/use-toast";
 
 const OnlineFriends: React.FC = () => {
   const [user] = useAuthState(auth);
   const [onlineFriends, setOnlineFriends] = useState<any[]>([]);
+  const friendsRefs = useRef<any[]>([]);
+  const { toast } = useToast();
 
   useUserPresence(user?.uid || "");
 
@@ -19,6 +22,8 @@ const OnlineFriends: React.FC = () => {
       const userData = userDoc.data();
 
       if (userData && userData.friends) {
+        // Check if the user has friends
+        const newFriendsRefs = []; // Array to store new friends' Realtime Database references
         const friends = await Promise.all(
           userData.friends.map(async (friendId: string) => {
             try {
@@ -28,30 +33,26 @@ const OnlineFriends: React.FC = () => {
               const friendStatusRef = ref(
                 database,
                 `presence/${friendId}/online`
-              );
-              const isOnline = await new Promise<boolean>((resolve, reject) => {
-                onValue(
-                  friendStatusRef,
-                  (snapshot) => {
-                    console.log(
-                      `Presence data for ${friendId}:`,
-                      snapshot.val()
-                    );
-                    resolve(snapshot.val() === true);
-                  },
-                  (error) => {
-                    console.error(
-                      `Error fetching presence data for ${friendId}:`,
-                      error
-                    );
-                    reject(error);
-                  },
-                  { onlyOnce: true }
-                );
+              ); // Get a reference to the friend's presence status in Realtime Database
+              newFriendsRefs.push(friendStatusRef); // Add the reference to the array
+
+              onValue(friendStatusRef, (snapshot) => {
+                // Set up a listener for the friend's presence status
+                const isOnline = snapshot.val() === true;
+                setOnlineFriends((prevFriends) => {
+                  // Update the online friends state
+                  const updatedFriends = prevFriends.filter(
+                    (f) => f.id !== friendId
+                  ); // Remove the friend if already in the list
+                  if (isOnline) {
+                    // If the friend is online, add them to the list
+                    updatedFriends.push({ id: friendDoc.id, ...friendData });
+                  }
+                  return updatedFriends; // Return the updated friends list
+                });
               });
 
-              console.log(`Friend ID: ${friendId}, isOnline: ${isOnline}`);
-              return isOnline ? { id: friendDoc.id, ...friendData } : null;
+              return null;
             } catch (error) {
               console.error(
                 `Error fetching data for friend ID ${friendId}:`,
@@ -61,24 +62,31 @@ const OnlineFriends: React.FC = () => {
             }
           })
         );
-        setOnlineFriends(friends.filter((friend) => friend !== null));
-        console.log(onlineFriends);
+        friendsRefs.current = newFriendsRefs; // Update the ref with the new friends' references
       }
     };
 
-    fetchOnlineFriends();
+    fetchOnlineFriends(); // Call the function to fetch online friends
+
+    return () => {
+      friendsRefs.current.forEach((ref) => off(ref)); // Remove each listener using the `off` function
+    };
   }, [user]);
 
   return (
-    <div>
-      <h2>Online Friends</h2>
+    <div className="p-4 max-w-md mx-auto bg-card text-card-foreground rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold mb-4">Online Friends</h2>
       <ul>
         {onlineFriends.map((friend) => (
-          <li key={friend.id}>{friend.displayname}</li>
+          <li
+            key={friend.id}
+            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
+          >
+            <span>{friend.displayname}</span>
+          </li>
         ))}
       </ul>
     </div>
   );
 };
-
 export default OnlineFriends;
