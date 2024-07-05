@@ -90,7 +90,7 @@ const MainContent = ({
           members={membersLookup}
         />
       </div>
-      <div className="flex-grow bg-background">
+      <div className="flex-grow bg-background h-full">
         {server === "DM" ? (
           <DMSection
             friend={selectedFriend}

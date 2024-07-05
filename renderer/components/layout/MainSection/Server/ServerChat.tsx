@@ -69,6 +69,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
   const lastNotifiedMessageId = useRef(null);
   const lastCheckedTimeRef = useRef(Date.now());
   const [user] = useAuthState(auth);
+  const lastUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     const serverRef = doc(firestore, "servers", server);
@@ -130,7 +131,8 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         if (newMessages.length > 0) {
           lastCheckedTimeRef.current = Date.now(); // Update last checked time
         }
-        // Update the messages state
+        // Update the messages
+        lastUserRef.current = "null";
         setMessages(newMessages);
         const lastMessage = newMessages[newMessages.length - 1];
 
@@ -287,13 +289,11 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     }
   };
 
-  let currentUser;
-  const checkBefore = (user: string) => {
-    if (user === currentUser) {
-      currentUser = user;
+  const checkBefore = (userId: string) => {
+    if (userId === lastUserRef.current) {
       return false;
     }
-    currentUser = user;
+    lastUserRef.current = userId;
     return true;
   };
 

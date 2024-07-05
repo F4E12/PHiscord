@@ -8,7 +8,7 @@ interface DMSectionProps {
 
 const DMSection = ({ friend, setSelectedFriend }: DMSectionProps) => {
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto h-full">
       {friend === "friendMenu" ? (
         <DMMenu setSelectedFriend={setSelectedFriend} />
       ) : (

@@ -85,7 +85,7 @@ const OnlineFriends = ({ setSelectedFriend }: OnlineFriendProps) => {
           <li
             key={friend.id}
             className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
-            onClick={() => setSelectedFriend(friend.displayname)}
+            onClick={() => setSelectedFriend(friend.id)}
           >
             <span>{friend.displayname}</span>
           </li>

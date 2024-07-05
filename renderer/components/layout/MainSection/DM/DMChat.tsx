@@ -59,6 +59,11 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
   const lastCheckedTimeRef = useRef(Date.now());
   const [user] = useAuthState(auth);
   const dummy = useRef<HTMLDivElement>(null);
+  const lastUserRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    lastUserRef.current = "null";
+  }, [friendId]);
 
   const fetchChannelId = async () => {
     try {
@@ -81,7 +86,6 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
       const friendDoc = await getDoc(friendDocRef);
 
       let channelId = userDoc.exists() ? userDoc.data()?.channelId : null;
-      console.log(userDoc.data());
 
       if (!channelId) {
         channelId = friendDoc.exists() ? friendDoc.data()?.channelId : null;
@@ -89,7 +93,6 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
       if (!channelId) {
         const newChannelRef = doc(collection(firestore, "directMessages"));
         channelId = newChannelRef.id;
-        console.log("C", channelId);
         await setDoc(newChannelRef, {
           members: [user.uid, friendId],
         });
@@ -113,12 +116,10 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
       const userDetails = await getUserData(user.uid);
       const friendDetails = await getUserData(friendId);
       let memberDetails = [userDetails, friendDetails];
-      console.log("User detail", memberDetails);
       const lookup = memberDetails.reduce((acc, member) => {
         acc[member.id] = member;
         return acc;
       }, {});
-      //   console.log(lookup["YPiYhfqJPPZPJczUf14P58JkM9w1"].displayname);
       setMembers(lookup);
     } catch (error) {
       console.error("Error fetching or creating channel ID:", error);
@@ -127,7 +128,6 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
 
   useEffect(() => {
     if (!user || !friendId) return;
-
     fetchChannelId();
   }, [user, friendId]);
 
@@ -158,10 +158,10 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
       if (newMessages.length > 0) {
         lastCheckedTimeRef.current = Date.now();
       }
-
+      lastUserRef.current = "null";
       setMessages(newMessages);
-      dummy.current?.scrollIntoView({ behavior: "smooth" });
     });
+    dummy.current?.scrollIntoView({ behavior: "smooth" });
 
     return () => unsubscribe();
   }, [channelId, user?.uid]);
@@ -296,18 +296,16 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
     return filePreview && fileType !== "image";
   }, [filePreview, fileType]);
 
-  let currentUser;
-  const checkBefore = useCallback((user: string) => {
-    if (user === currentUser) {
-      currentUser = user;
+  const checkBefore = (userId: string) => {
+    if (userId === lastUserRef.current) {
       return false;
     }
-    currentUser = user;
+    lastUserRef.current = userId;
     return true;
-  }, []);
+  };
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow h-full justify-between">
       <div className="overflow-auto w-full flex-grow flex flex-col h-full justify-between">
         <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
           <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
@@ -573,4 +571,4 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
   );
 };
 
-export default React.memo(DirectMessage);
+export default DirectMessage;

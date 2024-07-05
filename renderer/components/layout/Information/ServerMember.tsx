@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getServerDetails } from "@/lib/retrieveserver";
-import { firestore } from "@/firebase/firebaseApp";
-import { doc, onSnapshot } from "firebase/firestore";
-
+import { auth, firestore } from "@/firebase/firebaseApp";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button, buttonVariants } from "@/components/ui/button";
+  arrayUnion,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
+
+import { useAuthState } from "react-firebase-hooks/auth";
+import MemberItem from "./MemberItem";
 
 interface ServerMembersProps {
   members: { [key: string]: any };
@@ -22,6 +22,7 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
   const [owner, setOwner] = useState<string>("");
   const [adminList, setAdminList] = useState<string[]>([]);
   const [memberList, setMemberList] = useState<string[]>([]);
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
     const fetchServerDetails = async () => {
@@ -98,37 +99,5 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
     </div>
   );
 };
-
-const MemberItem = ({ member }) => (
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div className="flex items-center space-x-2 bg-gray-700 p-2 rounded-md mb-2">
-          <Avatar>
-            <AvatarImage
-              src={member?.profilePicture}
-              alt={member?.displayname}
-            />
-            <AvatarFallback>
-              {member.displayname?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="text-white font-bold">
-              {member.displayname || "Unknown"}
-            </div>
-            <div className="text-gray-400 text-sm">@{member?.username}</div>
-          </div>
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="left">
-        {member.displayname}
-        <Button type="submit" className={buttonVariants({ variant: "form" })}>
-          Add Friend
-        </Button>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
 
 export default ServerMembers;
