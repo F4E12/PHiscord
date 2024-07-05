@@ -1,21 +1,18 @@
+import DMChat from "./DMChat";
 import DMMenu from "./DMMenu";
 
 interface DMSectionProps {
   friend: any;
+  setSelectedFriend: (friend: any | null) => void;
 }
 
-const DMSection = ({ friend }: DMSectionProps) => {
+const DMSection = ({ friend, setSelectedFriend }: DMSectionProps) => {
   return (
     <div className="overflow-auto">
-      {/* Chat content goes here */}
-      {friend}
       {friend === "friendMenu" ? (
-        <DMMenu />
+        <DMMenu setSelectedFriend={setSelectedFriend} />
       ) : (
-        <div className="">
-          <div className="chat-messages">CHATTING</div>
-          <div className="chat-input">KIRIM</div>
-        </div>
+        <DMChat friendId={friend} />
       )}
     </div>
   );

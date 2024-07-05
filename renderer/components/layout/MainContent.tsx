@@ -34,6 +34,7 @@ const MainContent = ({
 
   const updateMembers = async (serverId) => {
     const users = await getUsersInServer(serverId);
+    console.log("users ", users);
     setMembers(users);
 
     const lookup = users.reduce((acc, user) => {
@@ -41,6 +42,7 @@ const MainContent = ({
       return acc;
     }, {});
     setMembersLookup(lookup);
+    console.log(lookup);
   };
 
   useEffect(() => {
@@ -90,7 +92,10 @@ const MainContent = ({
       </div>
       <div className="flex-grow bg-background">
         {server === "DM" ? (
-          <DMSection friend={selectedFriend} />
+          <DMSection
+            friend={selectedFriend}
+            setSelectedFriend={setSelectedFriend}
+          />
         ) : (
           <ServerChat
             server={server}

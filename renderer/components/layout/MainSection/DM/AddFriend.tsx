@@ -87,11 +87,11 @@ const AddFriend: React.FC = () => {
         value={targetUserId}
         onChange={(e) => setTargetUserId(e.target.value)}
         placeholder="Enter user ID to send friend request"
-        className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+        className="w-full px-4 py-2 bg-background text-white rounded focus:outline-none"
       />
       <button
         onClick={handleSendRequest}
-        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        className="px-4 py-2 bg-form text-white rounded hover:bg-form/70"
       >
         Add Friend
       </button>

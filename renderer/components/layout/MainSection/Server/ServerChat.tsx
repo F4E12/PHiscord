@@ -37,7 +37,7 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import PopOverImage from "./PopOverImage";
+import PopOverImage from "../PopOverImage";
 
 import {
   Dialog,
@@ -191,7 +191,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // Handle progress, e.g., show a progress bar
+          // Handle progress
         },
         (error) => {
           console.error("File upload error:", error);

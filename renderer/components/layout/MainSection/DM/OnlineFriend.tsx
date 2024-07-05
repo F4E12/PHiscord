@@ -6,7 +6,11 @@ import { ref, onValue, off } from "firebase/database";
 import useUserPresence from "@/lib/useUserPresence";
 import { useToast } from "@/components/ui/use-toast";
 
-const OnlineFriends: React.FC = () => {
+interface OnlineFriendProps {
+  setSelectedFriend: (friend: any | null) => void;
+}
+
+const OnlineFriends = ({ setSelectedFriend }: OnlineFriendProps) => {
   const [user] = useAuthState(auth);
   const [onlineFriends, setOnlineFriends] = useState<any[]>([]);
   const friendsRefs = useRef<any[]>([]);
@@ -80,7 +84,8 @@ const OnlineFriends: React.FC = () => {
         {onlineFriends.map((friend) => (
           <li
             key={friend.id}
-            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
+            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
+            onClick={() => setSelectedFriend(friend.displayname)}
           >
             <span>{friend.displayname}</span>
           </li>

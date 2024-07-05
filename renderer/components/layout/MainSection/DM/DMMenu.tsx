@@ -6,7 +6,11 @@ import BlockedFriends from "./BlockedFriend";
 import AddFriendForm from "./AddFriend";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const DMMenu: React.FC = () => {
+interface DMMenuProps {
+  setSelectedFriend: (friend: any | null) => void;
+}
+
+const DMMenu = ({ setSelectedFriend }: DMMenuProps) => {
   return (
     <div className="p-4">
       <Tabs defaultValue="online">
@@ -18,10 +22,10 @@ const DMMenu: React.FC = () => {
           <TabsTrigger value="add-friend">Add Friend</TabsTrigger>
         </TabsList>
         <TabsContent value="online">
-          <OnlineFriends />
+          <OnlineFriends setSelectedFriend={setSelectedFriend} />
         </TabsContent>
         <TabsContent value="all">
-          <AllFriends />
+          <AllFriends setSelectedFriend={setSelectedFriend} />
         </TabsContent>
         <TabsContent value="pending">
           <PendingRequests />

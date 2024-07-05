@@ -10,7 +10,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-const AllFriends: React.FC = () => {
+interface AllFriendProps {
+  setSelectedFriend: (friend: any | null) => void;
+}
+
+const AllFriends = ({ setSelectedFriend }: AllFriendProps) => {
   const [user] = useAuthState(auth);
   const [allFriends, setAllFriends] = useState<any[]>([]);
 
@@ -85,7 +89,8 @@ const AllFriends: React.FC = () => {
         {allFriends.map((friend) => (
           <li
             key={friend.id}
-            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
+            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
+            onClick={() => setSelectedFriend(friend.id)}
           >
             <span>{friend.displayname}</span>
             <div className="flex space-x-2">

@@ -159,7 +159,7 @@ const ServerInformation = ({
             </div>
             <div className="">
               {(user.uid === serverDetails.ownerId ||
-                serverDetails.admin.includes(user.uid)) && (
+                serverDetails.admin?.includes(user.uid)) && (
                 <CreateChannelPopup serverId={selectedServer} />
               )}
             </div>
