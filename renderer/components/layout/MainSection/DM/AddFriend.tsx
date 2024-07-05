@@ -81,17 +81,17 @@ const AddFriend: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="flex gap-2">
       <input
         type="text"
         value={targetUserId}
         onChange={(e) => setTargetUserId(e.target.value)}
         placeholder="Enter user ID to send friend request"
-        className="w-full px-4 py-2 bg-background text-white rounded focus:outline-none"
+        className="w-full px-4 py-2 bg-primary text-white rounded focus:outline-none"
       />
       <button
         onClick={handleSendRequest}
-        className="px-4 py-2 bg-form text-white rounded hover:bg-form/70"
+        className="px-4 py-2 bg-form text-white rounded hover:bg-form/70 w-32"
       >
         Add Friend
       </button>
