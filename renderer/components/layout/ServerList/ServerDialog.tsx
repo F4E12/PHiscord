@@ -40,7 +40,6 @@ const ServerDialog = ({
     null
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  console.log("USER LOGIN", user?.id);
   const handleCreateServer = async () => {
     // Logic to create server
     if (!serverName) return;

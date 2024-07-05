@@ -9,7 +9,6 @@ export const getServerDetails = async (serverId: string) => {
       return { id: serverDoc.id, ...serverDoc.data() };
     } 
   } catch (error) {
-    console.error('Error fetching server details:', error);
     throw error;
   }
 };
@@ -21,7 +20,6 @@ export const getAllServerDetails = async (serverIds: string[]) => {
     );
     return await Promise.all(serverDetailsPromises);
   } catch (error) {
-    console.error('Error fetching all server details:', error);
     throw error;
   }
 };

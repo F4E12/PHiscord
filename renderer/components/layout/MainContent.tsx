@@ -34,7 +34,6 @@ const MainContent = ({
 
   const updateMembers = async (serverId) => {
     const users = await getUsersInServer(serverId);
-    console.log("users ", users);
     setMembers(users);
 
     const lookup = users.reduce((acc, user) => {
@@ -42,7 +41,6 @@ const MainContent = ({
       return acc;
     }, {});
     setMembersLookup(lookup);
-    console.log(lookup);
   };
 
   useEffect(() => {
@@ -50,8 +48,6 @@ const MainContent = ({
       console.error("Server is undefined or null");
       return;
     }
-
-    console.log("Fetching members for server:", server);
 
     // Initial fetch of members
     updateMembers(server);
