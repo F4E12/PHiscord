@@ -11,6 +11,8 @@ import {
   doc,
   updateDoc,
   getDoc,
+  where,
+  getDocs,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../ui/avatar";
@@ -47,6 +49,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import EmojiPicker from "emoji-picker-react";
+import { Theme } from "emoji-picker-react";
 
 interface ServerChatProps {
   server: any;
@@ -95,11 +99,19 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
   }, [server]);
 
   function truncateString(str, num) {
-    if (str.length <= num) {
+    if (str?.length <= num) {
       return str;
     }
-    return str.slice(0, num) + "...";
+    return str?.slice(0, num) + "...";
   }
+
+  const checkIfMentioned = (text) => {
+    const mentionPattern = new RegExp(
+      `@${members[user.uid]?.displayname}`,
+      "gi" //g-> global, i->incensitive
+    );
+    return mentionPattern.test(text);
+  };
 
   const dummy = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -115,7 +127,12 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         let newMessages = [];
         querySnapshot.forEach((doc) => {
-          newMessages.push({ ...doc.data(), id: doc.id });
+          const data = doc.data();
+          newMessages.push({
+            ...data,
+            id: doc.id,
+            isMentioned: checkIfMentioned(data.text),
+          });
         });
 
         newMessages.forEach((message) => {
@@ -167,6 +184,42 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     }
   };
 
+  // Handle input and mentioning
+  const [mentionSuggestions, setMentionSuggestions] = useState([]);
+  const [showMentionSuggestions, setShowMentionSuggestions] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(0);
+
+  const handleChangeInput = (e) => {
+    const { value, selectionStart } = e.target;
+    setNewMessage(value);
+    setCursorPosition(selectionStart);
+
+    const mentionMatch = value.slice(0, selectionStart).match(/@(\w*)$/);
+    if (mentionMatch) {
+      const mentionQuery = mentionMatch[1].toLowerCase();
+      const filteredMembers = Object.values(members).filter((member) =>
+        member.displayname.toLowerCase().startsWith(mentionQuery)
+      );
+      setMentionSuggestions(filteredMembers);
+      setShowMentionSuggestions(true);
+    } else {
+      setShowMentionSuggestions(false);
+    }
+  };
+  const inputRef = useRef(null);
+  const handleMentionSelect = (username) => {
+    const mentionMatch = newMessage.slice(0, cursorPosition).match(/@(\w*)$/);
+    if (mentionMatch) {
+      const beforeMention = newMessage.slice(0, mentionMatch.index);
+      const afterMention = newMessage.slice(cursorPosition);
+      const newText = `${beforeMention}@${username} ${afterMention}`;
+      setNewMessage(newText);
+      setCursorPosition(beforeMention.length + username.length + 2); // Adjust cursor position after mention
+      setShowMentionSuggestions(false);
+      inputRef.current.focus();
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileURL("");
     setFileName("");
@@ -177,8 +230,8 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       reader.onloadend = () => {
         setFilePreview(reader.result);
         let filetemp = reader.result.toString();
-        const prefix = filetemp.split(",")[0];
-        const fileType = prefix.split(":")[1].split("/")[0];
+        const prefix = filetemp?.split(",")[0];
+        const fileType = prefix?.split(":")[1]?.split("/")[0];
         setFileType(fileType);
       };
       reader.readAsDataURL(file);
@@ -297,18 +350,116 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     return true;
   };
 
+  //SEARCHING
+  const [searchMsg, setSearchMsg] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearchChange = (e) => {
+    setSearchMsg(e.target.value);
+    if (e.target.value.trim() === "") {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (searchMsg.trim() === "") return;
+
+    try {
+      const messagesRef = collection(
+        firestore,
+        `servers/${server}/textChannels/${channel.id}/messages`
+      );
+      const querySnapshot = await getDocs(messagesRef);
+      const results = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.text.toLowerCase().includes(searchMsg.toLowerCase())) {
+          results.push({ id: doc.id, ...data });
+        }
+      });
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Error searching messages:", error);
+    }
+  };
+
+  //EMOJI
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const onEmojiClick = (emojiObject) => {
+    setNewMessage((prevInput) => prevInput + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
   return (
     <div className="overflow-auto w-full flex-grow flex flex-col h-full justify-between">
       <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
         <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
-          # {channel?.name}
+          <span># {channel?.name}</span>
+          <span>
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center bg-primary rounded px-1"
+            >
+              <input
+                type="text"
+                value={searchMsg}
+                onChange={handleSearchChange}
+                placeholder="Search"
+                className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
+              />
+              <button type="submit" className="text-gray-500 ml-2">
+                <Icon type="search"></Icon>
+              </button>
+            </form>
+          </span>
         </div>
+        {searchResults && searchMsg && (
+          <div className="z-20 fixed top-8 right-2 bg-secondary max-h-64 overflow-auto p-2">
+            {searchResults.map((message) => (
+              <div className="flex items-start space-x-4 p-2 bg-primary text-secondary-foreground rounded-lg max-w-md mx-auto mt-2 hover:bg-background hover:cursor-pointer">
+                <Avatar className="">
+                  <AvatarImage
+                    src={members[message.uid]?.profilePicture}
+                    alt={members[message.uid]?.displayname}
+                  />
+                  <AvatarFallback>
+                    {members[message.uid]?.displayname?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold text-destructive">
+                      {members[message.uid]?.displayname}
+                    </span>
+                    <span className="text-sm text-foreground">
+                      {message.createdAt.toDate().toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="mt-1">
+                    <p className="text-muted-foreground rounded-lg">
+                      {message.text}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="flex flex-col gap-2 px-2 pb-2 bg-background overflow-auto">
           {messages.map((msg) =>
             checkBefore(msg.uid) ? (
               <div
                 key={msg.id}
-                className="relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60"
+                className={`relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60 ${
+                  msg.isMentioned ? "bg-form" : ""
+                }`}
               >
                 <Avatar className="">
                   <AvatarImage
@@ -322,7 +473,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                 <div className="text-destructive">
                   <p className="font-bold">{members[msg.uid]?.displayname}</p>
                   <div className="text-gray-300">{msg?.text}</div>
-                  {msg?.text == "laporan" && (
+                  {msg?.fileType != "image" && msg?.fileType != "" && (
                     <div className="">
                       <a
                         href={msg.fileURL}
@@ -391,11 +542,13 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
               </div>
             ) : (
               <div
-                className="relative group text-gray-300 pl-14 hover:bg-secondary/60"
+                className={`relative group text-gray-300 pl-14 hover:bg-secondary/60 ${
+                  msg.isMentioned ? "bg-form" : ""
+                }`}
                 key={msg.id}
               >
                 {msg?.text}
-                {msg?.text == "laporan" && (
+                {msg?.fileType != "image" && msg?.fileType?.trim() != "" && (
                   <div className="">
                     <a
                       href={msg.fileURL}
@@ -562,9 +715,9 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
           </div>
         </div>
       )}
-
       <form onSubmit={sendMessage} className="flex space-x-2 mb-2 p-2 w-full">
         <input
+          ref={inputRef}
           type="file"
           id="fileInput"
           style={{ display: "none" }}
@@ -579,7 +732,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         <input
           type="text"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleChangeInput}
           placeholder="Type a message..."
           className="flex-grow p-2 rounded bg-gray-700 text-white"
         />
@@ -589,7 +742,32 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         >
           Send
         </button>
+        <button
+          type="button"
+          className="emoji-picker-button"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        >
+          😊
+        </button>
       </form>
+      {showMentionSuggestions && (
+        <div className="absolute bg-secondary rounded mt-2 p-2 bottom-16">
+          {mentionSuggestions.map((user) => (
+            <div
+              key={user.id}
+              className="p-1 cursor-pointer hover:bg-gray-600"
+              onClick={() => handleMentionSelect(user.displayname)}
+            >
+              {user.displayname}
+            </div>
+          ))}
+        </div>
+      )}
+      {showEmojiPicker && (
+        <div className="emoji-picker absolute right-0 bottom-16">
+          <EmojiPicker onEmojiClick={onEmojiClick} theme={Theme.DARK} />
+        </div>
+      )}
     </div>
   );
 };

@@ -30,6 +30,7 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
             })
           );
           setAllFriends(friends);
+          setFilteredFriends(friends);
         }
       }
     });
@@ -37,8 +38,37 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
     return () => unsubscribe();
   }, [user]);
 
+  // SEARCH CONVERSATION
+  const [searchItem, setSearchItem] = useState("");
+  const [filteredFriends, setFilteredFriends] = useState(allFriends);
+
+  const handleSearchConversation = (e) => {
+    const searchTerm = e.target.value;
+    setSearchItem(searchTerm);
+
+    const filteredItems = allFriends.filter((friend) =>
+      friend.displayname.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setFilteredFriends(filteredItems);
+  };
+
   return (
     <div className="">
+      <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-secondary">
+        <div className="flex items-center bg-primary rounded px-1 w-full">
+          <input
+            type="text"
+            value={searchItem}
+            onChange={handleSearchConversation}
+            placeholder="Search Conversation"
+            className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none w-52"
+          />
+          <button type="submit" className="text-gray-500 ml-2">
+            <Icon type="search"></Icon>
+          </button>
+        </div>
+      </div>
       <div
         className="flex flex-col space-y-2 p-2"
         onClick={() => setSelectedFriend("friendMenu")}
@@ -49,7 +79,7 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
         </div>
       </div>
       <div className="pl-2 hover:cursor-default">Direct Message</div>
-      {allFriends.map((friend, index) => (
+      {filteredFriends.map((friend, index) => (
         <div
           key={index}
           className="flex items-center space-x-2 hover:cursor-pointer hover:bg-background p-1 rounded m-2"

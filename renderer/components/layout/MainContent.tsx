@@ -7,6 +7,7 @@ import DMSection from "./MainSection/DM/DMSection";
 import { getUsersInServer } from "@/lib/retrieveuser";
 import { firestore } from "@/firebase/firebaseApp";
 import { collection, doc, onSnapshot } from "firebase/firestore";
+import ServerVoice from "./MainSection/Server/ServerVoice";
 
 interface ServerContentProps {
   userData: any;
@@ -17,6 +18,8 @@ interface ServerContentProps {
   setSelectedChannel: (channel: any) => void;
   selectedFriend: any;
   setSelectedFriend: (channel: any) => void;
+  setChannelType: (channel: any) => void;
+  channelType: any;
 }
 
 const MainContent = ({
@@ -25,9 +28,11 @@ const MainContent = ({
   onImageChange,
   server,
   selectedChannel,
+  setChannelType,
   setSelectedChannel,
   setSelectedFriend,
   selectedFriend,
+  channelType,
 }: ServerContentProps) => {
   const [members, setMembers] = useState([]);
   const [membersLookup, setMembersLookup] = useState({});
@@ -83,6 +88,7 @@ const MainContent = ({
           selectedChannel={selectedChannel}
           setSelectedChannel={setSelectedChannel}
           setSelectedFriend={setSelectedFriend}
+          setChannelType={setChannelType}
           members={membersLookup}
         />
       </div>
@@ -93,11 +99,17 @@ const MainContent = ({
             setSelectedFriend={setSelectedFriend}
           />
         ) : (
-          <ServerChat
-            server={server}
-            channel={selectedChannel}
-            members={membersLookup}
-          />
+          <>
+            {channelType === "text" ? (
+              <ServerChat
+                server={server}
+                channel={selectedChannel}
+                members={membersLookup}
+              />
+            ) : (
+              <ServerVoice></ServerVoice>
+            )}
+          </>
         )}
       </div>
     </div>

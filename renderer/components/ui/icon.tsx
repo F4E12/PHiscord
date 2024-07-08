@@ -13,7 +13,8 @@ interface IconProps {
     | "pen"
     | "plus"
     | "file"
-    | "friend";
+    | "friend"
+    | "search";
 }
 
 function Icon({ type }: IconProps) {
@@ -291,6 +292,23 @@ function Icon({ type }: IconProps) {
           d="M3 5v-.75C3 3.56 3.56 3 4.25 3s1.24.56 1.33 1.25C6.12 8.65 9.46 12 13 12h1a8 8 0 0 1 8 8 2 2 0 0 1-2 2 .21.21 0 0 1-.2-.15 7.65 7.65 0 0 0-1.32-2.3c-.15-.2-.42-.06-.39.17l.25 2c.02.15-.1.28-.25.28H9a2 2 0 0 1-2-2v-2.22c0-1.57-.67-3.05-1.53-4.37A15.85 15.85 0 0 1 3 5Z"
           className=""
         ></path>
+      </svg>
+    );
+  }
+  if ((type = "search")) {
+    return (
+      <svg
+        className="h-5 w-5 text-foreground"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
       </svg>
     );
   }

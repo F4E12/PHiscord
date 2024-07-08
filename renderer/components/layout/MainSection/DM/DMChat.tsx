@@ -12,6 +12,7 @@ import {
   updateDoc,
   getDoc,
   setDoc,
+  getDocs,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../ui/avatar";
@@ -38,6 +39,7 @@ import {
 } from "firebase/storage";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { getUserData } from "@/lib/retrieveuser";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 
 interface DirectMessageProps {
   friendId: string;
@@ -304,13 +306,110 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
     return true;
   };
 
+  //SEARCHING
+  const [searchMsg, setSearchMsg] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearchChange = (e) => {
+    setSearchMsg(e.target.value);
+    if (e.target.value.trim() === "") {
+      setSearchResults([]);
+    }
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (searchMsg.trim() === "") return;
+
+    try {
+      const messagesRef = collection(
+        firestore,
+        `directMessages/${channelId}/messages`
+      );
+      const querySnapshot = await getDocs(messagesRef);
+      const results = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.text.toLowerCase().includes(searchMsg.toLowerCase())) {
+          results.push({ id: doc.id, ...data });
+        }
+      });
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Error searching messages:", error);
+    }
+  };
+
+  //EMOJI
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const onEmojiClick = (emojiObject) => {
+    setNewMessage((prevInput) => prevInput + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
   return (
     <div className="flex-grow h-full justify-between">
       <div className="overflow-auto w-full flex-grow flex flex-col h-full justify-between">
         <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
           <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
             {members[friendId]?.displayname}
+            <span>
+              <form
+                onSubmit={handleSearchSubmit}
+                className="flex items-center bg-primary rounded px-1"
+              >
+                <input
+                  type="text"
+                  value={searchMsg}
+                  onChange={handleSearchChange}
+                  placeholder="Search"
+                  className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
+                />
+                <button type="submit" className="text-gray-500 ml-2">
+                  <Icon type="search"></Icon>
+                </button>
+              </form>
+            </span>
           </div>
+          {searchResults && searchMsg && (
+            <div className="z-20 fixed top-8 right-2 bg-secondary max-h-64 overflow-auto p-2">
+              {searchResults.map((message) => (
+                <div className="flex items-start space-x-4 p-2 bg-primary text-secondary-foreground rounded-lg max-w-md mx-auto mt-2 hover:bg-background hover:cursor-pointer">
+                  <Avatar className="">
+                    <AvatarImage
+                      src={members[message.uid]?.profilePicture}
+                      alt={members[message.uid]?.displayname}
+                    />
+                    <AvatarFallback>
+                      {members[message.uid]?.displayname?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <span className="font-bold text-destructive">
+                        {members[message.uid]?.displayname}
+                      </span>
+                      <span className="text-sm text-foreground">
+                        {message.createdAt
+                          .toDate()
+                          .toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                      </span>
+                    </div>
+                    <div className="mt-1">
+                      <p className="text-muted-foreground rounded-lg">
+                        {message.text}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="flex flex-col gap-2 px-2 pb-2 bg-background overflow-auto">
             {messages.map((msg) =>
               checkBefore(msg.uid) ? (
@@ -565,7 +664,19 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
           >
             Send
           </button>
+          <button
+            type="button"
+            className="emoji-picker-button"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          >
+            😊
+          </button>
         </form>
+        {showEmojiPicker && (
+          <div className="emoji-picker absolute right-0 bottom-16">
+            <EmojiPicker onEmojiClick={onEmojiClick} theme={Theme.DARK} />
+          </div>
+        )}
       </div>
     </div>
   );

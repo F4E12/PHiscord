@@ -17,12 +17,14 @@ interface ServerInformationProps {
   selectedServer: any;
   selectedChannel: any;
   setSelectedChannel: (channel: any) => void;
+  setChannelType: (channel: any) => void;
   members: any;
 }
 
 const ServerInformation = ({
   selectedServer,
   setSelectedChannel,
+  setChannelType,
   members,
 }: ServerInformationProps) => {
   const [serverDetails, setServerDetails] = useState(selectedServer);
@@ -115,6 +117,16 @@ const ServerInformation = ({
     fetchChannels();
   };
 
+  const handleTextChannelClick = (channel) => {
+    setSelectedChannel(channel);
+    setChannelType("text");
+  };
+
+  const handleVoiceChannelClick = (channel) => {
+    setSelectedChannel(channel);
+    setChannelType("voice");
+  };
+
   return (
     <>
       {loading ? (
@@ -136,7 +148,7 @@ const ServerInformation = ({
                   <div
                     key={index}
                     className="text-foreground hover:cursor-pointer hover:bg-background"
-                    onClick={() => setSelectedChannel(channel)}
+                    onClick={() => handleTextChannelClick(channel)}
                   >
                     #{channel.name}
                   </div>
@@ -150,7 +162,7 @@ const ServerInformation = ({
                   <div
                     key={index}
                     className="text-foreground hover:cursor-pointer hover:bg-background"
-                    onClick={() => setSelectedChannel(channel)}
+                    onClick={() => handleVoiceChannelClick(channel)}
                   >
                     {channel.name}
                   </div>

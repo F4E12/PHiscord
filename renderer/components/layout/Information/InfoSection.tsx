@@ -13,6 +13,7 @@ interface InfoSectionProps {
   selectedServer: any;
   selectedChannel: any;
   setSelectedChannel: (channel: any) => void;
+  setChannelType: (channel: any) => void;
   setSelectedFriend: (friend: any) => void;
   members: any;
 }
@@ -23,6 +24,7 @@ const InfoSection = ({
   onImageChange,
   selectedServer,
   selectedChannel,
+  setChannelType,
   setSelectedChannel,
   setSelectedFriend,
   members,
@@ -37,6 +39,7 @@ const InfoSection = ({
             selectedServer={selectedServer}
             selectedChannel={selectedChannel}
             setSelectedChannel={setSelectedChannel}
+            setChannelType={setChannelType}
             members={members}
           />
         )}

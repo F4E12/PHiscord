@@ -11,7 +11,8 @@ import { doc, onSnapshot } from "firebase/firestore";
 const Layout = ({ children }) => {
   const [selectedServer, setSelectedServer] = useState<any>("DM");
   const [selectedChannel, setSelectedChannel] = useState<any>(null);
-  const [selectedFriend, setSelectedFriend] = useState<any>(null);
+  const [channelType, setChannelType] = useState<any>(null);
+  const [selectedFriend, setSelectedFriend] = useState<any>("friendMenu");
   const [user, loading, error] = useAuthState(auth);
   const [userData, setUserData] = useState<any>(null);
   const [servers, setServers] = useState([]);
@@ -80,6 +81,7 @@ const Layout = ({ children }) => {
   const fetchChannels = async () => {
     const fetchedTextChannels = await getTextChannels(selectedServer);
     setSelectedChannel(fetchedTextChannels[0]);
+    setChannelType("text");
   };
   useEffect(() => {
     fetchChannels();
@@ -102,6 +104,8 @@ const Layout = ({ children }) => {
         setSelectedChannel={setSelectedChannel}
         selectedFriend={selectedFriend}
         setSelectedFriend={setSelectedFriend}
+        setChannelType={setChannelType}
+        channelType={channelType}
       />
     </div>
   );
