@@ -12,6 +12,7 @@ import { collection, doc, onSnapshot } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebaseApp";
 import ServerHeaderInfo from "./ServerHeaderInfo";
 import { useAuthState } from "react-firebase-hooks/auth";
+import Icon from "@/components/ui/icon";
 
 interface ServerInformationProps {
   selectedServer: any;
@@ -147,10 +148,11 @@ const ServerInformation = ({
                 {textChannels.map((channel, index) => (
                   <div
                     key={index}
-                    className="text-foreground hover:cursor-pointer hover:bg-background"
+                    className="text-foreground hover:cursor-pointer hover:bg-background flex gap-2"
                     onClick={() => handleTextChannelClick(channel)}
                   >
-                    #{channel.name}
+                    <Icon type="hashtag" />
+                    {channel.name}
                   </div>
                 ))}
               </div>
@@ -161,9 +163,10 @@ const ServerInformation = ({
                 {voiceChannels.map((channel, index) => (
                   <div
                     key={index}
-                    className="text-foreground hover:cursor-pointer hover:bg-background"
+                    className="text-foreground hover:cursor-pointer hover:bg-background flex gap-2"
                     onClick={() => handleVoiceChannelClick(channel)}
                   >
+                    <Icon type="speaker" />
                     {channel.name}
                   </div>
                 ))}

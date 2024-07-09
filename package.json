@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:nextron\" \"npm run dev:server\"",
     "dev:nextron": "nextron",
-    "dev:server": "node agoraToken.tsx",
+    "dev:server": "node agoraToken.js",
     "build": "nextron build",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -35,6 +35,7 @@
     "bad-words": "^3.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "electron-serve": "^1.3.0",
     "electron-store": "^8.2.0",

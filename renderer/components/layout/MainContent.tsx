@@ -9,6 +9,11 @@ import { firestore } from "@/firebase/firebaseApp";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import ServerVoice from "./Call/CallComponent";
 
+import dynamic from "next/dynamic";
+const CallComponent = dynamic(() => import("./Call/CallComponent"), {
+  ssr: false,
+});
+
 interface ServerContentProps {
   userData: any;
   onProfileUpdate: (newData: any) => void;
@@ -38,22 +43,26 @@ const MainContent = ({
   const [membersLookup, setMembersLookup] = useState({});
 
   const [token, setToken] = useState("");
-  const [channelName] = useState("testChannel"); // replace with your channel name
-  const [appId] = useState("YOUR_AGORA_APP_ID"); // replace with your Agora app ID
-  const [uid] = useState(Math.floor(Math.random() * 1000000));
+  const [appId] = useState("e9f44b3f91fb4ef2815937b4fcc10907");
 
   useEffect(() => {
+    if (channelType === "text") return;
     const fetchToken = async () => {
-      // const functions = getFunctions();
-      // const generateAgoraToken = httpsCallable(functions, "generateAgoraToken");
-      // const result = await generateAgoraToken({ channelName, uid });
-      // setToken(result.data.token);
+      try {
+        const response = await fetch(
+          `http://localhost:3001/generate-agora-token?channelId=${selectedChannel?.id}&uid=${userData?.id}`
+        );
+        const data = await response.json();
+        setToken(data.token);
+      } catch (error) {
+        console.error("Error generating token:", error);
+      }
     };
 
     if (userData) {
       fetchToken();
     }
-  }, [userData, channelName, uid]);
+  }, [userData, selectedChannel?.id, userData?.id]);
 
   const updateMembers = async (serverId) => {
     const users = await getUsersInServer(serverId);
@@ -126,7 +135,14 @@ const MainContent = ({
               />
             ) : (
               <div className="">
-                <CallComponent />
+                <CallComponent
+                  appId={appId}
+                  token={token}
+                  channelId={selectedChannel.id}
+                  uid={userData?.id}
+                  username={userData.displayname}
+                  channelName={selectedChannel.name}
+                />
               </div>
             )}
           </>
