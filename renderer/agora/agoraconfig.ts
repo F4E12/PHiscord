@@ -1,0 +1,2 @@
+export const AGORA_APP_ID = "6b9d5839d2244f95a011d39833f40bde";
+export const AGORA_TOKEN = "YOUR_TEMP_TOKEN";

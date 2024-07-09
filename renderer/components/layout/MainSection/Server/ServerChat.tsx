@@ -272,9 +272,13 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     setFilePreview("");
   };
 
+  const Filter = require("bad-words");
+  const filter = new Filter();
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
+    const filterMsg = filter.clean(newMessage);
+    console.log(filterMsg);
     setNewMessage("");
     await addDoc(
       collection(
@@ -282,7 +286,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         `servers/${server}/textChannels/${channel.id}/messages`
       ),
       {
-        text: newMessage,
+        text: filterMsg,
         createdAt: serverTimestamp(),
         uid: user?.uid,
         fileType,

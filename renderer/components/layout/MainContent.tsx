@@ -7,7 +7,7 @@ import DMSection from "./MainSection/DM/DMSection";
 import { getUsersInServer } from "@/lib/retrieveuser";
 import { firestore } from "@/firebase/firebaseApp";
 import { collection, doc, onSnapshot } from "firebase/firestore";
-import ServerVoice from "./MainSection/Server/ServerVoice";
+import ServerVoice from "./Call/CallComponent";
 
 interface ServerContentProps {
   userData: any;
@@ -36,6 +36,24 @@ const MainContent = ({
 }: ServerContentProps) => {
   const [members, setMembers] = useState([]);
   const [membersLookup, setMembersLookup] = useState({});
+
+  const [token, setToken] = useState("");
+  const [channelName] = useState("testChannel"); // replace with your channel name
+  const [appId] = useState("YOUR_AGORA_APP_ID"); // replace with your Agora app ID
+  const [uid] = useState(Math.floor(Math.random() * 1000000));
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const functions = getFunctions();
+      const generateAgoraToken = httpsCallable(functions, "generateAgoraToken");
+      const result = await generateAgoraToken({ channelName, uid });
+      setToken(result.data.token);
+    };
+
+    if (userData) {
+      fetchToken();
+    }
+  }, [userData, channelName, uid]);
 
   const updateMembers = async (serverId) => {
     const users = await getUsersInServer(serverId);
@@ -107,7 +125,7 @@ const MainContent = ({
                 members={membersLookup}
               />
             ) : (
-              <ServerVoice></ServerVoice>
+              <div className="">{/* <CallComponent /> */}</div>
             )}
           </>
         )}
