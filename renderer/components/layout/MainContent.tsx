@@ -44,10 +44,10 @@ const MainContent = ({
 
   useEffect(() => {
     const fetchToken = async () => {
-      const functions = getFunctions();
-      const generateAgoraToken = httpsCallable(functions, "generateAgoraToken");
-      const result = await generateAgoraToken({ channelName, uid });
-      setToken(result.data.token);
+      // const functions = getFunctions();
+      // const generateAgoraToken = httpsCallable(functions, "generateAgoraToken");
+      // const result = await generateAgoraToken({ channelName, uid });
+      // setToken(result.data.token);
     };
 
     if (userData) {
@@ -125,7 +125,9 @@ const MainContent = ({
                 members={membersLookup}
               />
             ) : (
-              <div className="">{/* <CallComponent /> */}</div>
+              <div className="">
+                <CallComponent />
+              </div>
             )}
           </>
         )}
