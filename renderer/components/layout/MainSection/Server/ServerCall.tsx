@@ -54,6 +54,7 @@ const ServerCall = ({
           channelName={channelName}
           server={server}
           members={members}
+          setJoin={setJoin}
         />
       ) : (
         <div className="">

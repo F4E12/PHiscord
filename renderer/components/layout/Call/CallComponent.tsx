@@ -13,26 +13,29 @@ const CallComponent = ({
   channelName,
   server,
   members,
+  setJoin,
 }) => {
   const [connectedUsers, setConnectedUsers] = useState([]);
+  const [localAudioTrack, setLocalAudioTrack] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isDeafened, setIsDeafened] = useState(false);
+  let client;
+
+  const updateUserInFirebase = async (user, action) => {
+    const userRef = doc(
+      firestore,
+      `servers/${server}/voiceChannels/${channelId}/users`,
+      user.id
+    );
+    if (action === "add") {
+      await setDoc(userRef, { uid: user.id, displayname: user.displayname });
+    } else if (action === "remove") {
+      await deleteDoc(userRef);
+    }
+  };
 
   useEffect(() => {
-    let client;
-    let localAudioTrack;
     setConnectedUsers([]);
-
-    const updateUserInFirebase = async (user, action) => {
-      const userRef = doc(
-        firestore,
-        `servers/${server}/voiceChannels/${channelId}/users`,
-        user.id
-      );
-      if (action === "add") {
-        await setDoc(userRef, { uid: user.id, displayname: user.displayname });
-      } else if (action === "remove") {
-        await deleteDoc(userRef);
-      }
-    };
 
     const startCall = async () => {
       try {
@@ -43,10 +46,11 @@ const CallComponent = ({
         await client.join(appId, channelId, token, uid);
         console.log("Joined channel successfully");
 
-        localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        setLocalAudioTrack(audioTrack);
 
         console.log("Publishing local audio track");
-        await client.publish([localAudioTrack]);
+        await client.publish([audioTrack]);
         console.log("Published local audio track");
 
         // Add the local user to the connected users state
@@ -120,12 +124,59 @@ const CallComponent = ({
     };
   }, [appId, token, channelId, uid, username]);
 
+  const toggleMute = async () => {
+    if (isMuted) {
+      await localAudioTrack.setEnabled(true);
+    } else {
+      await localAudioTrack.setEnabled(false);
+    }
+    setIsMuted(!isMuted);
+  };
+
+  const toggleDeafen = async () => {
+    if (isDeafened) {
+      await client.enableAudio();
+    } else {
+      await client.disableAudio();
+    }
+    setIsDeafened(!isDeafened);
+  };
+
+  const leaveChannel = async () => {
+    const user = members[uid];
+    if (localAudioTrack) localAudioTrack.close();
+    if (client) client.leave();
+    await updateUserInFirebase(user, "remove");
+    setJoin(false);
+    setConnectedUsers([]);
+  };
+
   return (
     <div className="">
       <div
         id="call-container"
         className="w-full h-full relative bg-background text-foreground p-4"
       >
+        <div className="flex mb-4">
+          <button
+            onClick={toggleMute}
+            className="mr-2 p-2 bg-gray-800 text-white rounded"
+          >
+            {isMuted ? "Unmute" : "Mute"}
+          </button>
+          <button
+            onClick={toggleDeafen}
+            className="mr-2 p-2 bg-gray-800 text-white rounded"
+          >
+            {isDeafened ? "Undeafen" : "Deafen"}
+          </button>
+          <button
+            onClick={leaveChannel}
+            className="mr-2 p-2 bg-red-800 text-white rounded"
+          >
+            Leave Channel
+          </button>
+        </div>
         {connectedUsers.map((user) => (
           <div
             key={user.uid}
