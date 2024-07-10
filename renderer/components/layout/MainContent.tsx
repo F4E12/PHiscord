@@ -10,6 +10,7 @@ import { collection, doc, onSnapshot } from "firebase/firestore";
 import ServerVoice from "./Call/CallComponent";
 
 import dynamic from "next/dynamic";
+import ServerCall from "./MainSection/Server/ServerCall";
 const CallComponent = dynamic(() => import("./Call/CallComponent"), {
   ssr: false,
 });
@@ -135,13 +136,15 @@ const MainContent = ({
               />
             ) : (
               <div className="">
-                <CallComponent
+                <ServerCall
                   appId={appId}
                   token={token}
                   channelId={selectedChannel.id}
                   uid={userData?.id}
                   username={userData.displayname}
                   channelName={selectedChannel.name}
+                  server={server}
+                  members={membersLookup}
                 />
               </div>
             )}

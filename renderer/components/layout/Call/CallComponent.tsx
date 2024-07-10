@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Icon from "@/components/ui/icon";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
+import { firestore } from "@/firebase/firebaseApp";
 
 const CallComponent = ({
   appId,
@@ -9,6 +11,8 @@ const CallComponent = ({
   uid,
   username,
   channelName,
+  server,
+  members,
 }) => {
   const [connectedUsers, setConnectedUsers] = useState([]);
 
@@ -16,6 +20,20 @@ const CallComponent = ({
     let client;
     let localAudioTrack;
     setConnectedUsers([]);
+
+    const updateUserInFirebase = async (user, action) => {
+      const userRef = doc(
+        firestore,
+        `servers/${server}/voiceChannels/${channelId}/users`,
+        user.id
+      );
+      if (action === "add") {
+        await setDoc(userRef, { uid: user.id, displayname: user.displayname });
+      } else if (action === "remove") {
+        await deleteDoc(userRef);
+      }
+    };
+
     const startCall = async () => {
       try {
         const AgoraRTC = (await import("agora-rtc-sdk-ng")).default;
@@ -36,6 +54,7 @@ const CallComponent = ({
           ...prevUsers,
           { uid: `local-${uid}`, username },
         ]);
+        await updateUserInFirebase(members[uid], "add");
 
         client.on("user-published", async (user, mediaType) => {
           await client.subscribe(user, mediaType);
@@ -49,31 +68,41 @@ const CallComponent = ({
               if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
                 return [
                   ...prevUsers,
-                  { uid: user.uid.toString(), username: `User ${user.uid}` },
+                  {
+                    uid: user.uid.toString(),
+                    username: `User ${members[user.uid]?.displayname}`,
+                  },
                 ];
               }
               return prevUsers;
             });
+            await updateUserInFirebase(members[user.uid], "add");
           }
         });
 
-        client.on("user-unpublished", (user) => {
+        client.on("user-unpublished", async (user) => {
+          console.log("KELUAR");
+          await updateUserInFirebase(members[user.uid], "remove");
           setConnectedUsers((prevUsers) =>
             prevUsers.filter((u) => u.uid !== user.uid.toString())
           );
         });
 
         // Check and display already connected users
-        client.remoteUsers.forEach((user) => {
+        client.remoteUsers.forEach(async (user) => {
           setConnectedUsers((prevUsers) => {
             if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
               return [
                 ...prevUsers,
-                { uid: user.uid.toString(), username: `User ${user.uid}` },
+                {
+                  uid: user.uid.toString(),
+                  username: `User ${members[user.uid]?.displayname}`,
+                },
               ];
             }
             return prevUsers;
           });
+          await updateUserInFirebase(members[user.uid], "add");
         });
       } catch (error) {
         console.error("Failed to join the channel:", error);
@@ -93,10 +122,6 @@ const CallComponent = ({
 
   return (
     <div className="">
-      <div className="p-2 border-b-2 border-[#202124] flex items-center bg-background">
-        <Icon type="speaker" />
-        <p className="ml-2">{channelName}</p>
-      </div>
       <div
         id="call-container"
         className="w-full h-full relative bg-background text-foreground p-4"
