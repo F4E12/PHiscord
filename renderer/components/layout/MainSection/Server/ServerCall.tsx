@@ -63,7 +63,7 @@ const ServerCall = ({
               key={user.uid}
               className="w-80 h-15 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground"
             >
-              {user.displayname}
+              {user.username}
             </li>
           ))}
           <Button

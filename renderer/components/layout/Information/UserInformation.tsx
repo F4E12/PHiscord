@@ -6,13 +6,24 @@ import { firestore, auth, database } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserData } from "@/lib/retrieveuser";
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, update } from "firebase/database";
 import useUserPresence from "@/lib/useUserPresence";
 
 export const updateUserData = async (userId: string, data: any) => {
   try {
     const userDocRef = doc(firestore, "users", userId);
     await setDoc(userDocRef, data, { merge: true });
+    console.log("User data updated successfully");
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    throw error;
+  }
+};
+
+const updateUserDataRealtime = async (userId, data) => {
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    await update(userRef, data);
     console.log("User data updated successfully");
   } catch (error) {
     console.error("Error updating user data:", error);
@@ -29,28 +40,46 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
   const presence = useUserPresence(user?.uid);
 
   useEffect(() => {
+    if (user) {
+      const userRef = ref(database, `users/${user.uid}`);
+      onValue(userRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setMute(data.isMuted || false);
+          setDeafen(data.isDeafened || false);
+        }
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (deafen) {
       setPreviousMuteState(mute);
       if (!mute) {
         setMute(true);
+        updateUserDataRealtime(user.uid, { isMuted: true });
       }
     } else {
       setMute(previousMuteState);
+      updateUserDataRealtime(user.uid, { isMuted: previousMuteState });
     }
   }, [deafen]);
 
-  const toggleMute = () => {
+  const toggleMute = async () => {
     if (!deafen) {
-      setMute(!mute);
+      const newMuteState = !mute;
+      setMute(newMuteState);
+      await updateUserDataRealtime(user.uid, { isMuted: newMuteState });
     }
   };
 
-  const toggleDeafen = () => {
-    setDeafen(!deafen);
+  const toggleDeafen = async () => {
+    const newDeafenState = !deafen;
+    setDeafen(newDeafenState);
+    await updateUserDataRealtime(user.uid, { isDeafened: newDeafenState });
   };
 
   const toggleSetting = () => {
-    console.log(userData);
     setSetting(!setting);
   };
 
