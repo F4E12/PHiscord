@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import Icon from "@/components/ui/icon";
 import { ref, set, onValue, update } from "firebase/database";
 import { doc, setDoc, deleteDoc } from "firebase/firestore";
@@ -23,6 +22,7 @@ const CallComponent = ({
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [localDeafen, setLocalDeafen] = useState(false);
   const [client, setClient] = useState(null);
+  const [listenersSet, setListenersSet] = useState(false);
 
   const updateUserInRealtimeDB = async (userId, data) => {
     try {
@@ -56,179 +56,191 @@ const CallComponent = ({
     }
   };
 
-  useEffect(() => {
-    const userRef = ref(database, `users/${uid}`);
-    const unsubscribe = onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data && localAudioTrack) {
-        localAudioTrack.setEnabled(!data.isMuted);
-      }
-      if (data && localVideoTrack) {
-        localVideoTrack.setEnabled(data.isCameraOn);
-      }
-    });
-    return () => unsubscribe();
-  }, [uid, localAudioTrack, localVideoTrack]);
-
-  useEffect(() => {
-    const addUserListener = (userId) => {
+  const addUserListeners = (userIds) => {
+    return userIds.map((userId) => {
       const userRef = ref(database, `users/${userId}`);
       return onValue(userRef, (snapshot) => {
         const data = snapshot.val();
         setConnectedUsers((prevUsers) =>
           prevUsers.map((u) =>
             u.uid === userId
-              ? { ...u, isMuted: data.isMuted, isDeafened: data.isDeafened }
+              ? {
+                  ...u,
+                  isMuted: data.isMuted,
+                  isDeafened: data.isDeafened,
+                  isCameraOn: data.isCameraOn,
+                }
               : u
           )
         );
-        setLocalDeafen(data.isDeafened);
+        if (userId === uid) {
+          setLocalDeafen(data.isDeafened);
+        }
       });
-    };
+    });
+  };
 
-    const listeners = connectedUsers.map((user) => addUserListener(user.uid));
+  const startCall = async () => {
+    try {
+      const AgoraRTC = (await import("agora-rtc-sdk-ng")).default;
+      const agoraClient = AgoraRTC.createClient({
+        mode: "rtc",
+        codec: "vp8",
+      });
+      setClient(agoraClient);
 
-    return () => {
-      listeners.forEach((unsubscribe) => unsubscribe());
-    };
-  }, [connectedUsers]);
+      console.log("Joining channel:", channelId);
+      await agoraClient.join(appId, channelId, token, uid);
+      console.log("Joined channel successfully");
 
-  useEffect(() => {
-    setConnectedUsers([]);
+      const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      const videoTrack = await AgoraRTC.createCameraVideoTrack();
+      setLocalAudioTrack(audioTrack);
+      setLocalVideoTrack(videoTrack);
 
-    const startCall = async () => {
-      try {
-        const AgoraRTC = (await import("agora-rtc-sdk-ng")).default;
-        const agoraClient = AgoraRTC.createClient({
-          mode: "rtc",
-          codec: "vp8",
-        });
-        setClient(agoraClient);
+      // Disable video track by default
+      await videoTrack.setEnabled(false);
 
-        console.log("Joining channel:", channelId);
-        await agoraClient.join(appId, channelId, token, uid);
-        console.log("Joined channel successfully");
+      console.log("Publishing local audio track");
+      await agoraClient.publish([audioTrack]);
+      console.log("Published local audio track");
 
-        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        const videoTrack = await AgoraRTC.createCameraVideoTrack();
-        setLocalAudioTrack(audioTrack);
-        setLocalVideoTrack(videoTrack);
+      // Add the local user to the connected users state
+      const localUserData = {
+        uid,
+        username,
+        isMuted: false,
+        isDeafened: false,
+        isCameraOn: false,
+      };
+      setLocalDeafen(false);
+      setConnectedUsers((prevUsers) => [...prevUsers, localUserData]);
+      await updateUserInRealtimeDB(uid, localUserData);
+      await updateUserInFirestore(uid, localUserData, "add");
 
-        console.log("Publishing local audio track");
-        await agoraClient.publish([audioTrack]);
-        console.log("Published local audio track");
+      const unsubscribeFunctions = addUserListeners([
+        uid,
+        ...connectedUsers.map((u) => u.uid),
+      ]);
 
-        // Add the local user to the connected users state
-        const localUserData = {
-          uid,
-          username,
+      agoraClient.on("user-published", async (user, mediaType) => {
+        await agoraClient.subscribe(user, mediaType);
+        if (mediaType === "audio") {
+          const remoteAudioTrack = user.audioTrack;
+          remoteAudioTrack.play();
+        }
+        if (mediaType === "video") {
+          const remoteVideoTrack = user.videoTrack;
+          let videoContainer = document.getElementById(
+            `remote-player-${user.uid}`
+          );
+          if (!videoContainer) {
+            videoContainer = document.createElement("div");
+            videoContainer.id = `remote-player-${user.uid}`;
+            videoContainer.className =
+              "w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3";
+            document
+              .getElementById(`video-user-${user.uid}`)
+              .append(videoContainer);
+          }
+          remoteVideoTrack.play(videoContainer);
+          const placeholder = document.getElementById(
+            `placeholder-${user.uid}`
+          );
+          if (placeholder) {
+            placeholder.style.display = "none";
+          }
+        }
+
+        // Add the remote user to the connected users state if not already added
+        const remoteUserData = {
+          uid: user.uid.toString(),
+          username: `User ${members[user.uid]?.displayname}`,
           isMuted: false,
           isDeafened: false,
           isCameraOn: false,
         };
-        setLocalDeafen(false);
-        setConnectedUsers((prevUsers) => [...prevUsers, localUserData]);
-        await updateUserInRealtimeDB(uid, localUserData);
-        await updateUserInFirestore(uid, localUserData, "add");
-
-        agoraClient.on("user-published", async (user, mediaType) => {
-          if (mediaType === "audio") {
-            await agoraClient.subscribe(user, mediaType);
-            const remoteAudioTrack = user.audioTrack;
-            remoteAudioTrack.play();
+        setConnectedUsers((prevUsers) => {
+          if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
+            return [...prevUsers, remoteUserData];
           }
-          if (mediaType === "video") {
-            await agoraClient.subscribe(user, mediaType);
-            const remoteVideoTrack = user.videoTrack;
-            const remotePlayerContainer = document.createElement("div");
-            remotePlayerContainer.id = user.uid.toString();
-            document
-              .getElementById("call-container")
-              .append(remotePlayerContainer);
-            remoteVideoTrack.play(remotePlayerContainer);
+          return prevUsers;
+        });
+        await updateUserInRealtimeDB(user.uid.toString(), remoteUserData);
+        await updateUserInFirestore(user.uid.toString(), remoteUserData, "add");
+
+        // Add listener for the new remote user
+        unsubscribeFunctions.push(...addUserListeners([user.uid.toString()]));
+      });
+
+      agoraClient.on("user-unpublished", (user, mediaType) => {
+        if (mediaType === "video") {
+          const remotePlayerContainer = document.getElementById(
+            `remote-player-${user.uid}`
+          );
+          if (remotePlayerContainer) {
+            remotePlayerContainer.remove();
           }
-
-          // Add the remote user to the connected users state if not already added
-          const remoteUserData = {
-            uid: user.uid.toString(),
-            username: `User ${members[user.uid]?.displayname}`,
-            isMuted: false,
-            isDeafened: false,
-            isCameraOn: false,
-          };
-          setConnectedUsers((prevUsers) => {
-            if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
-              return [...prevUsers, remoteUserData];
-            }
-            return prevUsers;
-          });
-          await updateUserInRealtimeDB(user.uid.toString(), remoteUserData);
-          await updateUserInFirestore(
-            user.uid.toString(),
-            remoteUserData,
-            "add"
+          const placeholder = document.getElementById(
+            `placeholder-${user.uid}`
           );
-        });
-
-        agoraClient.on("user-unpublished", (user, mediaType) => {
-          if (mediaType === "video") {
-            const remotePlayerContainer = document.getElementById(
-              user.uid.toString()
-            );
-            if (remotePlayerContainer) {
-              remotePlayerContainer.remove();
-            }
+          if (placeholder) {
+            placeholder.style.display = "flex";
           }
-          console.log(`User ${user.uid} unpublished their ${mediaType}.`);
-        });
+        }
+        console.log(`User ${user.uid} unpublished their ${mediaType}.`);
+      });
 
-        agoraClient.on("user-left", async (user) => {
-          console.log("User left:", user.uid);
-          const userId = user.uid.toString();
-          await updateUserInRealtimeDB(userId, { status: "left" });
-          await updateUserInFirestore(userId, {}, "remove");
-          setConnectedUsers((prevUsers) =>
-            prevUsers.filter((u) => u.uid !== userId)
-          );
-        });
+      agoraClient.on("user-left", async (user) => {
+        console.log("User left:", user.uid);
+        const userId = user.uid.toString();
+        await updateUserInRealtimeDB(userId, { status: "left" });
+        await updateUserInFirestore(userId, {}, "remove");
+        setConnectedUsers((prevUsers) =>
+          prevUsers.filter((u) => u.uid !== userId)
+        );
+      });
 
-        // Check and display already connected users
-        agoraClient.remoteUsers.forEach(async (user) => {
-          const remoteUserData = {
-            uid: user.uid.toString(),
-            username: `User ${members[user.uid]?.displayname}`,
-            isMuted: false,
-            isDeafened: false,
-            isCameraOn: false,
-          };
-          setConnectedUsers((prevUsers) => {
-            if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
-              return [...prevUsers, remoteUserData];
-            }
-            return prevUsers;
-          });
-          await updateUserInRealtimeDB(user.uid.toString(), remoteUserData);
-          await updateUserInFirestore(
-            user.uid.toString(),
-            remoteUserData,
-            "add"
-          );
+      // Check and display already connected users
+      agoraClient.remoteUsers.forEach(async (user) => {
+        const remoteUserData = {
+          uid: user.uid.toString(),
+          username: `User ${members[user.uid]?.displayname}`,
+          isMuted: false,
+          isDeafened: false,
+          isCameraOn: false,
+        };
+        setConnectedUsers((prevUsers) => {
+          if (!prevUsers.some((u) => u.uid === user.uid.toString())) {
+            return [...prevUsers, remoteUserData];
+          }
+          return prevUsers;
         });
-      } catch (error) {
-        console.error("Failed to join the channel:", error);
-      }
-    };
+        await updateUserInRealtimeDB(user.uid.toString(), remoteUserData);
+        await updateUserInFirestore(user.uid.toString(), remoteUserData, "add");
 
-    if (token && typeof window !== "undefined") {
-      startCall();
+        // Add listener for the existing remote users
+        unsubscribeFunctions.push(...addUserListeners([user.uid.toString()]));
+      });
+
+      return unsubscribeFunctions;
+    } catch (error) {
+      console.error("Failed to join the channel:", error);
     }
+  };
 
-    return () => {
-      // Cleanup function to stop tracks and leave the channel
-      if (localAudioTrack) localAudioTrack.close();
-      if (localVideoTrack) localVideoTrack.close();
-      if (client) client.leave();
-    };
+  useEffect(() => {
+    if (token && typeof window !== "undefined") {
+      const unsubscribe = startCall();
+      return () => {
+        // Cleanup function to stop tracks and leave the channel
+        if (localAudioTrack) localAudioTrack.close();
+        if (localVideoTrack) localVideoTrack.close();
+        if (client) client.leave();
+        if (unsubscribe)
+          unsubscribe.then((unsubFns) => unsubFns?.forEach((unsub) => unsub()));
+      };
+    }
   }, [appId, token, channelId, uid, username]);
 
   const toggleMute = async () => {
@@ -245,6 +257,7 @@ const CallComponent = ({
       }
     }
   };
+
   const toggleDeafen = async () => {
     if (client) {
       const newDeafenState = !connectedUsers.find((user) => user.uid === uid)
@@ -274,23 +287,53 @@ const CallComponent = ({
   };
 
   const toggleCamera = async () => {
-    if (localVideoTrack) {
-      const newCameraState = !isCameraOn;
-      if (newCameraState) {
-        await localVideoTrack.setEnabled(true);
-        await client.publish(localVideoTrack);
-      } else {
-        await localVideoTrack.setEnabled(false);
-        await client.unpublish(localVideoTrack);
+    if (!localVideoTrack || !client) return;
+
+    const newCameraState = !isCameraOn;
+    if (newCameraState) {
+      await localVideoTrack.setEnabled(true);
+      await client.publish(localVideoTrack);
+
+      // Create and play local video if not already present
+      let videoContainer = document.getElementById(`local-player-${uid}`);
+      if (!videoContainer) {
+        videoContainer = document.createElement("div");
+        videoContainer.id = `local-player-${uid}`;
+        videoContainer.className =
+          "w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3";
+        document.getElementById(`video-user-${uid}`).append(videoContainer);
       }
-      setConnectedUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.uid === uid ? { ...u, isCameraOn: newCameraState } : u
-        )
-      );
-      setIsCameraOn(newCameraState);
-      await updateUserInRealtimeDB(uid, { isCameraOn: newCameraState });
+      localVideoTrack.play(videoContainer);
+
+      // Hide placeholder
+      const placeholder = document.getElementById(`placeholder-${uid}`);
+      if (placeholder) {
+        placeholder.style.display = "none";
+      }
+    } else {
+      await localVideoTrack.setEnabled(false);
+      await client.unpublish(localVideoTrack);
+
+      // Remove local video
+      const videoContainer = document.getElementById(`local-player-${uid}`);
+      if (videoContainer) {
+        videoContainer.remove();
+      }
+
+      // Show placeholder
+      const placeholder = document.getElementById(`placeholder-${uid}`);
+      if (placeholder) {
+        placeholder.style.display = "flex";
+      }
     }
+
+    setConnectedUsers((prevUsers) =>
+      prevUsers.map((u) =>
+        u.uid === uid ? { ...u, isCameraOn: newCameraState } : u
+      )
+    );
+    setIsCameraOn(newCameraState);
+    await updateUserInRealtimeDB(uid, { isCameraOn: newCameraState });
   };
 
   const leaveChannel = async () => {
@@ -310,50 +353,21 @@ const CallComponent = ({
         id="call-container"
         className="w-full h-full relative bg-background text-foreground p-4"
       >
-        <div className="flex mb-4">
-          <button
-            onClick={toggleMute}
-            className="mr-2 p-2 bg-gray-800 text-white rounded"
-          >
-            {connectedUsers.find((user) => user.uid === uid)?.isMuted
-              ? "Unmute"
-              : "Mute"}
-          </button>
-          <button
-            onClick={toggleDeafen}
-            className="mr-2 p-2 bg-gray-800 text-white rounded"
-          >
-            {connectedUsers.find((user) => user.uid === uid)?.isDeafened
-              ? "Undeafen"
-              : "Deafen"}
-          </button>
-          <button
-            onClick={toggleCamera}
-            className="mr-2 p-2 bg-gray-800 text-white rounded"
-          >
-            {isCameraOn ? "Turn Camera Off" : "Turn Camera On"}
-          </button>
-          <button
-            onClick={leaveChannel}
-            className="mr-2 p-2 bg-red-800 text-white rounded"
-          >
-            Leave Channel
-          </button>
-        </div>
-        <div className="flex">
+        <div className="flex flex-wrap text-center justify-center">
           {connectedUsers.map((user) => (
-            <div
-              key={user.uid}
-              id={user.uid}
-              className="w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3"
-            >
-              <Avatar>
-                <AvatarImage src={members[user.uid]?.profilePicture} />
-                <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
-              </Avatar>
-
-              <span className="text-xl text-bold">{user.username}</span>
-              <div className="absolute bottom-24 flex gap-2">
+            <div key={user.uid}>
+              <div
+                id={`placeholder-${user.uid}`}
+                className="w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3"
+              >
+                <Avatar>
+                  <AvatarImage src={members[user.uid]?.profilePicture} />
+                  <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </div>
+              <div id={`video-user-${user.uid}`}></div>
+              <span className="text-s text-bold m-0">{user.username}</span>
+              <div className="flex items-center justify-center gap-2">
                 {user.isMuted ? (
                   <Icon type="not-mic"></Icon>
                 ) : (
@@ -368,6 +382,36 @@ const CallComponent = ({
             </div>
           ))}
         </div>
+      </div>
+      <div className="flex mb-4 justify-center">
+        <button
+          onClick={toggleMute}
+          className="mr-2 p-2 bg-gray-800 text-white rounded"
+        >
+          {connectedUsers.find((user) => user.uid === uid)?.isMuted
+            ? "Unmute"
+            : "Mute"}
+        </button>
+        <button
+          onClick={toggleDeafen}
+          className="mr-2 p-2 bg-gray-800 text-white rounded"
+        >
+          {connectedUsers.find((user) => user.uid === uid)?.isDeafened
+            ? "Undeafen"
+            : "Deafen"}
+        </button>
+        <button
+          onClick={toggleCamera}
+          className="mr-2 p-2 bg-gray-800 text-white rounded"
+        >
+          {isCameraOn ? "Turn Camera Off" : "Turn Camera On"}
+        </button>
+        <button
+          onClick={leaveChannel}
+          className="mr-2 p-2 bg-red-800 text-white rounded"
+        >
+          Leave Channel
+        </button>
       </div>
     </div>
   );
