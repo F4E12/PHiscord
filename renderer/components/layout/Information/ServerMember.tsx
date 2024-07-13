@@ -77,14 +77,18 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
       {owner && (
         <div>
           <h3 className="text-lg text-white">Server Owner</h3>
-          <MemberItem member={members[owner]} />
+          <MemberItem member={members[owner]} currUser={members[user.uid]} />
         </div>
       )}
       {adminList.length > 0 && (
         <div>
           <h3 className="text-lg text-white">Server Admins</h3>
           {adminList.map((admin) => (
-            <MemberItem key={admin} member={members[admin]} />
+            <MemberItem
+              key={admin}
+              member={members[admin]}
+              currUser={members[user.uid]}
+            />
           ))}
         </div>
       )}
@@ -92,7 +96,11 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
         <div>
           <h3 className="text-lg text-white">Server Members</h3>
           {memberList.map((member) => (
-            <MemberItem key={member} member={members[member]} />
+            <MemberItem
+              key={member}
+              member={members[member]}
+              currUser={members[user.uid]}
+            />
           ))}
         </div>
       )}

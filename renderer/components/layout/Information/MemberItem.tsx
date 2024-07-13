@@ -11,6 +11,7 @@ import {
   addDoc,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   serverTimestamp,
@@ -22,7 +23,7 @@ import { auth, firestore } from "@/firebase/firebaseApp";
 import { useEffect, useState } from "react";
 import { getUserData } from "@/lib/retrieveuser";
 
-const MemberItem = ({ member }) => {
+const MemberItem = ({ member, currUser }) => {
   const [user] = useAuthState(auth);
   const [newMessage, setNewMessage] = useState("");
   const [channelId, setChannelId] = useState<string | null>(null);
@@ -155,11 +156,14 @@ const MemberItem = ({ member }) => {
     }
   };
 
+  const Filter = require("bad-words");
+  const filter = new Filter();
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "") return;
+    const filterMsg = filter.clean(newMessage);
     setNewMessage("");
-    await addDoc(
+    const messageDocRef = await addDoc(
       collection(firestore, `directMessages/${channelId}/messages`),
       {
         text: newMessage,
@@ -170,6 +174,41 @@ const MemberItem = ({ member }) => {
         fileName: "",
       }
     );
+    if (member.id !== user?.uid) {
+      try {
+        const notificationRef = doc(
+          firestore,
+          `notifications/${member.id}/messages`,
+          messageDocRef.id
+        );
+        console.log("Creating notification for user:", member.id);
+        await setDoc(notificationRef, {
+          type: "message",
+          text: filterMsg,
+          fileType: null,
+          fileName: null,
+          channelName: "DM",
+          senderName: currUser.displayname,
+          profilePicture: currUser.profilePicture,
+          createdAt: serverTimestamp(),
+        });
+        console.log("Notification created for user:", member.id);
+
+        setTimeout(async () => {
+          console.log("Removing notification for user:", member.id);
+          try {
+            await deleteDoc(notificationRef);
+          } catch (error) {
+            console.error("Error removing notification:", error);
+          }
+        }, 10);
+      } catch (error) {
+        console.error(
+          `Error creating notification for user ${member.id}:`,
+          error
+        );
+      }
+    }
   };
 
   return (

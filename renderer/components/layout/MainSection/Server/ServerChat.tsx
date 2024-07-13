@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { firestore, auth } from "@/firebase/firebaseApp";
+import { database } from "@/firebase/firebaseApp";
+import { ref as databaseRef, remove } from "firebase/database";
 import {
   collection,
   query,
@@ -13,6 +15,7 @@ import {
   getDoc,
   where,
   getDocs,
+  setDoc,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../ui/avatar";
@@ -51,6 +54,7 @@ import {
 } from "@/components/ui/dialog";
 import EmojiPicker from "emoji-picker-react";
 import { Theme } from "emoji-picker-react";
+import { getDatabase, set } from "firebase/database";
 
 interface ServerChatProps {
   server: any;
@@ -135,21 +139,22 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
           });
         });
 
-        newMessages.forEach((message) => {
-          if (
-            message.createdAt &&
-            message.createdAt.toMillis() > lastCheckedTimeRef.current &&
-            message.uid !== user?.uid
-          ) {
-            notify(message);
-          }
-        });
+        // NOTIFICATION
+        // newMessages.forEach((message) => {
+        //   if (
+        //     message.createdAt &&
+        //     message.createdAt.toMillis() > lastCheckedTimeRef.current &&
+        //     message.uid !== user?.uid
+        //   ) {
+        //     notify(message);
+        //   }
+        // });
 
-        if (newMessages.length > 0) {
-          lastCheckedTimeRef.current = Date.now(); // Update last checked time
-        }
-        // Update the messages
-        lastUserRef.current = "null";
+        // if (newMessages.length > 0) {
+        //   lastCheckedTimeRef.current = Date.now(); // Update last checked time
+        // }
+        // // Update the messages
+        // lastUserRef.current = "null";
         setMessages(newMessages);
         const lastMessage = newMessages[newMessages.length - 1];
 
@@ -159,30 +164,30 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       return () => unsubscribe();
     }
   }, [channel]);
-
-  const notify = (message) => {
-    if (Notification.permission === "granted") {
-      new Notification(
-        members[message.uid]?.displayname + " (" + channel.name + ")",
-        {
-          body: message.text,
-          icon: members[message.uid]?.profilePicture,
-        }
-      );
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(
-            members[message.uid]?.displayname + " (" + channel.name + ")",
-            {
-              body: message.text,
-              icon: members[message.uid]?.profilePicture,
-            }
-          );
-        }
-      });
-    }
-  };
+  // NOTIFICATION
+  // const notify = (message) => {
+  //   if (Notification.permission === "granted") {
+  //     new Notification(
+  //       members[message.uid]?.displayname + " (" + channel.name + ")",
+  //       {
+  //         body: message.text,
+  //         icon: members[message.uid]?.profilePicture,
+  //       }
+  //     );
+  //   } else if (Notification.permission !== "denied") {
+  //     Notification.requestPermission().then((permission) => {
+  //       if (permission === "granted") {
+  //         new Notification(
+  //           members[message.uid]?.displayname + " (" + channel.name + ")",
+  //           {
+  //             body: message.text,
+  //             icon: members[message.uid]?.profilePicture,
+  //           }
+  //         );
+  //       }
+  //     });
+  //   }
+  // };
 
   // Handle input and mentioning
   const [mentionSuggestions, setMentionSuggestions] = useState([]);
@@ -277,10 +282,13 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
+
     const filterMsg = filter.clean(newMessage);
-    console.log(filterMsg);
+    console.log("Filtered message:", filterMsg);
     setNewMessage("");
-    await addDoc(
+
+    // Add message to Firestore
+    const messageDocRef = await addDoc(
       collection(
         firestore,
         `servers/${server}/textChannels/${channel.id}/messages`
@@ -295,12 +303,52 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       }
     );
 
+    console.log("Message added to Firestore with ID:", messageDocRef.id);
+
+    // Create notification for each member, excluding the sender
+    for (const [memberId, memberInfo] of Object.entries(members)) {
+      if (memberId !== user?.uid) {
+        try {
+          const notificationRef = doc(
+            firestore,
+            `notifications/${memberId}/messages`,
+            messageDocRef.id
+          );
+          console.log("Creating notification for user:", memberId);
+          await setDoc(notificationRef, {
+            type: "message",
+            text: filterMsg,
+            fileType,
+            fileName,
+            channelName: channel.name,
+            senderName: members[user.uid].displayname,
+            profilePicture: members[user.uid].profilePicture,
+            createdAt: serverTimestamp(),
+          });
+          console.log("Notification created for user:", memberId);
+
+          setTimeout(async () => {
+            console.log("Removing notification for user:", memberId);
+            try {
+              await deleteDoc(notificationRef);
+            } catch (error) {
+              console.error("Error removing notification:", error);
+            }
+          }, 10);
+        } catch (error) {
+          console.error(
+            `Error creating notification for user ${memberId}:`,
+            error
+          );
+        }
+      }
+    }
+
     setFileURL("");
     setFileName("");
     setFilePreview("");
     dummy.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   const checkIsImagePreview = () => {
     if (filePreview && fileType === "image") {
       return true;

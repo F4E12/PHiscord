@@ -233,11 +233,14 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
     setFilePreview("");
   };
 
+  const Filter = require("bad-words");
+  const filter = new Filter();
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
+    const filterMsg = filter.clean(newMessage);
     setNewMessage("");
-    await addDoc(
+    const messageDocRef = await addDoc(
       collection(firestore, `directMessages/${channelId}/messages`),
       {
         text: newMessage,
@@ -248,6 +251,44 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
         fileName,
       }
     );
+
+    for (const [memberId, memberInfo] of Object.entries(members)) {
+      if (memberId !== user?.uid) {
+        try {
+          const notificationRef = doc(
+            firestore,
+            `notifications/${memberId}/messages`,
+            messageDocRef.id
+          );
+          console.log("Creating notification for user:", memberId);
+          await setDoc(notificationRef, {
+            type: "message",
+            text: filterMsg,
+            fileType,
+            fileName,
+            channelName: "DM",
+            senderName: members[user.uid].displayname,
+            profilePicture: members[user.uid].profilePicture,
+            createdAt: serverTimestamp(),
+          });
+          console.log("Notification created for user:", memberId);
+
+          setTimeout(async () => {
+            console.log("Removing notification for user:", memberId);
+            try {
+              await deleteDoc(notificationRef);
+            } catch (error) {
+              console.error("Error removing notification:", error);
+            }
+          }, 10);
+        } catch (error) {
+          console.error(
+            `Error creating notification for user ${memberId}:`,
+            error
+          );
+        }
+      }
+    }
 
     setFileURL("");
     setFileName("");
@@ -355,6 +396,34 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
   const [token, setToken] = useState("");
   const [appId] = useState("e9f44b3f91fb4ef2815937b4fcc10907");
 
+  const call = async () => {
+    setJoin(true);
+    try {
+      const notificationRef = doc(
+        firestore,
+        `notifications/${friendId}/messages`,
+        channelId
+      );
+      console.log("Creating notification for user:", friendId);
+      await setDoc(notificationRef, {
+        type: "dm-call",
+        senderName: members[user.uid].displayname,
+        profilePicture: members[user.uid].profilePicture,
+        createdAt: serverTimestamp(),
+      });
+
+      setTimeout(async () => {
+        try {
+          await deleteDoc(notificationRef);
+        } catch (error) {
+          console.error("Error removing notification:", error);
+        }
+      }, 10);
+    } catch (error) {
+      console.error(`Error creating notification for user ${friendId}:`, error);
+    }
+  };
+
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -395,10 +464,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
           <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
             <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
               {members[friendId]?.displayname}
-              <span
-                onClick={() => setJoin(true)}
-                className="hover:cursor-pointer"
-              >
+              <span onClick={() => call()} className="hover:cursor-pointer">
                 <Icon type="call" />
               </span>
               <span>
