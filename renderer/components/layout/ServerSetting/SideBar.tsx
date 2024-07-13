@@ -21,15 +21,21 @@ export const SideBar = ({
       <div className="space-y-4">
         <div
           className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer"
+          onClick={() => setSelectedSetting("general")}
+        >
+          <span>General Setting</span>
+        </div>
+        <div
+          className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer"
           onClick={() => setSelectedSetting("roles")}
         >
           <span>Roles</span>
         </div>
         <div
           className="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded cursor-pointer"
-          onClick={() => setSelectedSetting("general")}
+          onClick={() => setSelectedSetting("nickname")}
         >
-          <span>General Setting</span>
+          <span>Server Nickname</span>
         </div>
         <InvitePopup link={joinLink} />
       </div>

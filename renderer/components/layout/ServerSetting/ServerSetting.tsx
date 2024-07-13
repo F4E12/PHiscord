@@ -4,6 +4,7 @@ import { signOutUser } from "@/lib/authentication";
 import SideBar from "./SideBar";
 import InvitePopup from "./InvitePopup";
 import GeneralSettings from "./ServerGeneralSetting";
+import NicknameSetting from "./NicknameSetting";
 
 interface ServerSettingProps {
   serverId: any;
@@ -19,6 +20,9 @@ export const ServerSetting = ({ serverId, members }: ServerSettingProps) => {
       ) : null}
       {selectedSetting === "general" ? (
         <GeneralSettings serverId={serverId} />
+      ) : null}
+      {selectedSetting === "nickname" ? (
+        <NicknameSetting serverId={serverId} />
       ) : null}
     </div>
   );

@@ -6,7 +6,7 @@ import ServerChat from "@/components/layout/MainSection/Server/ServerChat";
 import DMSection from "./MainSection/DM/DMSection";
 import { getUsersInServer } from "@/lib/retrieveuser";
 import { firestore } from "@/firebase/firebaseApp";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
 import ServerVoice from "./Call/CallComponent";
 
 import dynamic from "next/dynamic";
@@ -65,16 +65,80 @@ const MainContent = ({
     }
   }, [userData, selectedChannel?.id, userData?.id]);
 
-  const updateMembers = async (serverId) => {
-    const users = await getUsersInServer(serverId);
-    setMembers(users);
+  const getServerNicknames = async (serverId) => {
+    const nicknamesRef = collection(
+      firestore,
+      `servers/${serverId}/serverNickname`
+    );
+    const snapshot = await getDocs(nicknamesRef);
+    const nicknames = snapshot.docs.reduce((acc, doc) => {
+      acc[doc.id] = doc.data().nickname;
+      return acc;
+    }, {});
+    return nicknames;
+  };
 
-    const lookup = users.reduce((acc, user) => {
+  const updateMembers = async () => {
+    const users = await getUsersInServer(server);
+    const serverNicknames = await getServerNicknames(server);
+
+    const updatedUsers = users.map((user) => {
+      if (serverNicknames[user.id]) {
+        return {
+          ...user,
+          displayname: serverNicknames[user.id] || user.displayname,
+        };
+      }
+      return user;
+    });
+
+    setMembers(updatedUsers);
+
+    // Create a lookup object for quick access
+    const lookup = updatedUsers.reduce((acc, user) => {
       acc[user.id] = user;
       return acc;
     }, {});
     setMembersLookup(lookup);
   };
+
+  useEffect(() => {
+    if (!server) return;
+
+    const nicknamesRef = collection(
+      firestore,
+      `servers/${server}/serverNickname`
+    );
+
+    const unsubscribe = onSnapshot(nicknamesRef, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const nickname = change.doc.data().nickname;
+        const userId = change.doc.id;
+
+        if (change.type === "added" || change.type === "modified") {
+          setMembers((prevMembers) =>
+            prevMembers.map((member) =>
+              member.id === userId
+                ? { ...member, displayname: nickname }
+                : member
+            )
+          );
+        }
+
+        if (change.type === "removed") {
+          setMembers((prevMembers) =>
+            prevMembers.map((member) =>
+              member.id === userId ? { ...member, displayname: "" } : member
+            )
+          );
+        }
+        updateMembers();
+      });
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [server]);
 
   useEffect(() => {
     if (!server) {
@@ -83,20 +147,20 @@ const MainContent = ({
     }
 
     // Initial fetch of members
-    updateMembers(server);
+    updateMembers();
 
     // Listen for changes in the server document
     const serverDocRef = doc(firestore, "servers", server);
     const unsubscribeServer = onSnapshot(serverDocRef, (snapshot) => {
       if (snapshot.exists()) {
-        updateMembers(server);
+        updateMembers();
       }
     });
 
     // Listen for changes in the users collection
     const usersCollectionRef = collection(firestore, "users");
     const unsubscribeUsers = onSnapshot(usersCollectionRef, () => {
-      updateMembers(server);
+      updateMembers();
     });
 
     return () => {
@@ -104,6 +168,7 @@ const MainContent = ({
       unsubscribeUsers();
     };
   }, [server]);
+
   return (
     <div className="flex flex-grow">
       <div className="w-64 bg-secondary">

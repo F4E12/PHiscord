@@ -283,7 +283,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
 
-    const filterMsg = filter.clean(newMessage);
+    const filterMsg = filter?.clean(newMessage);
     console.log("Filtered message:", filterMsg);
     setNewMessage("");
 
