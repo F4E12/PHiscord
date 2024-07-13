@@ -197,7 +197,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     const mentionMatch = value.slice(0, selectionStart).match(/@(\w*)$/);
     if (mentionMatch) {
       const mentionQuery = mentionMatch[1].toLowerCase();
-      const filteredMembers = Object.values(members).filter((member) =>
+      const filteredMembers = Object.values(members).filter((member: any) =>
         member.displayname.toLowerCase().startsWith(mentionQuery)
       );
       setMentionSuggestions(filteredMembers);

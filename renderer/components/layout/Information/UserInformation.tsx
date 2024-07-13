@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserData } from "@/lib/retrieveuser";
 import { ref, onValue, set, update } from "firebase/database";
 import useUserPresence from "@/lib/useUserPresence";
+import { boolean } from "zod";
 
 export const updateUserData = async (userId: string, data: any) => {
   try {
@@ -30,6 +31,11 @@ const updateUserDataRealtime = async (userId, data) => {
     throw error;
   }
 };
+
+let ipc;
+if (typeof window !== "undefined") {
+  ipc = (window as any).ipc;
+}
 
 function UserInformation({ userData, onProfileUpdate, onImageChange }) {
   const [mute, setMute] = useState(false);
@@ -64,6 +70,18 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
       updateUserDataRealtime(user.uid, { isMuted: previousMuteState });
     }
   }, [deafen]);
+
+  useEffect(() => {
+    if (ipc) {
+      ipc.on("toggle-mute", toggleMute);
+      ipc.on("toggle-deafen", toggleDeafen);
+
+      return () => {
+        ipc.off("toggle-mute", toggleMute);
+        ipc.off("toggle-deafen", toggleDeafen);
+      };
+    }
+  }, [mute, deafen]);
 
   const toggleMute = async () => {
     if (!deafen) {

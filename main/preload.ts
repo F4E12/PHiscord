@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { off } from 'process'
 
 const handler = {
   send(channel: string, value: unknown) {
@@ -13,6 +14,9 @@ const handler = {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
+  off(channel:string ,callback:(...args: unknown[]) => void) {
+    ipcRenderer.removeListener(channel, callback);
+  }
 }
 
 contextBridge.exposeInMainWorld('ipc', handler)

@@ -122,10 +122,12 @@ const MainContent = ({
       </div>
       <div className="flex-grow bg-background h-full">
         {server === "DM" ? (
-          <DMSection
-            friend={selectedFriend}
-            setSelectedFriend={setSelectedFriend}
-          />
+          <>
+            <DMSection
+              friend={selectedFriend}
+              setSelectedFriend={setSelectedFriend}
+            />
+          </>
         ) : (
           <>
             {channelType === "text" ? (

@@ -36,23 +36,48 @@ const CallComponent = ({
   };
 
   const updateUserInFirestore = async (userId, data, action) => {
-    try {
-      const userDocRef = doc(
-        firestore,
-        `servers/${server}/voiceChannels/${channelId}/users`,
-        userId
-      );
-      if (action === "add") {
-        await setDoc(userDocRef, data);
-      } else if (action === "remove") {
-        await deleteDoc(userDocRef);
+    if (channelName === "dm-call") {
+      try {
+        const userDocRef = doc(
+          firestore,
+          `directMessages/${channelId}/callMembers/`,
+          userId
+        );
+        if (action === "add") {
+          await setDoc(userDocRef, data);
+        } else if (action === "remove") {
+          await deleteDoc(userDocRef);
+        }
+        console.log(
+          `User data ${
+            action === "add" ? "added to" : "removed from"
+          } Firestore`
+        );
+      } catch (error) {
+        console.error(`Error updating user data in Firestore:`, error);
+        throw error;
       }
-      console.log(
-        `User data ${action === "add" ? "added to" : "removed from"} Firestore`
-      );
-    } catch (error) {
-      console.error(`Error updating user data in Firestore:`, error);
-      throw error;
+    } else {
+      try {
+        const userDocRef = doc(
+          firestore,
+          `servers/${server}/voiceChannels/${channelId}/users`,
+          userId
+        );
+        if (action === "add") {
+          await setDoc(userDocRef, data);
+        } else if (action === "remove") {
+          await deleteDoc(userDocRef);
+        }
+        console.log(
+          `User data ${
+            action === "add" ? "added to" : "removed from"
+          } Firestore`
+        );
+      } catch (error) {
+        console.error(`Error updating user data in Firestore:`, error);
+        throw error;
+      }
     }
   };
 
@@ -410,7 +435,7 @@ const CallComponent = ({
           onClick={leaveChannel}
           className="mr-2 p-2 bg-red-800 text-white rounded"
         >
-          Leave Channel
+          {channelName === "dm-call" ? "Leave Call" : "Leave Channel"}
         </button>
       </div>
     </div>

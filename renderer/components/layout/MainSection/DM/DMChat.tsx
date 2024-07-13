@@ -40,6 +40,7 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { getUserData } from "@/lib/retrieveuser";
 import EmojiPicker, { Theme } from "emoji-picker-react";
+import CallComponent from "../../Call/CallComponent";
 
 interface DirectMessageProps {
   friendId: string;
@@ -348,87 +349,193 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
     setShowEmojiPicker(false);
   };
 
+  // CALL
+  const [isJoin, setJoin] = useState(false);
+
+  const [token, setToken] = useState("");
+  const [appId] = useState("e9f44b3f91fb4ef2815937b4fcc10907");
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/generate-agora-token?channelId=${channelId}&uid=${user?.uid}`
+        );
+        const data = await response.json();
+        setToken(data.token);
+      } catch (error) {
+        console.error("Error generating token:", error);
+      }
+    };
+
+    if (user) {
+      fetchToken();
+    }
+  }, [user, channelId, user?.uid]);
+
   return (
-    <div className="flex-grow h-full justify-between">
-      <div className="overflow-auto w-full flex-grow flex flex-col h-full justify-between">
-        <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
-          <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
-            {members[friendId]?.displayname}
-            <span>
-              <form
-                onSubmit={handleSearchSubmit}
-                className="flex items-center bg-primary rounded px-1"
+    <>
+      {isJoin ? (
+        <div className="">
+          <CallComponent
+            appId={appId}
+            token={token}
+            channelId={channelId}
+            uid={user.uid}
+            username={members[user.uid]?.displayname}
+            channelName={`dm-call`}
+            server={`dm-call`}
+            members={members}
+            setJoin={setJoin}
+          />
+        </div>
+      ) : (
+        // <div className="flex-grow h-full">
+        <div className="w-full flex-grow flex flex-col h-full justify-between">
+          <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
+            <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
+              {members[friendId]?.displayname}
+              <span
+                onClick={() => setJoin(true)}
+                className="hover:cursor-pointer"
               >
-                <input
-                  type="text"
-                  value={searchMsg}
-                  onChange={handleSearchChange}
-                  placeholder="Search"
-                  className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
-                />
-                <button type="submit" className="text-gray-500 ml-2">
-                  <Icon type="search"></Icon>
-                </button>
-              </form>
-            </span>
-          </div>
-          {searchResults && searchMsg && (
-            <div className="z-20 fixed top-8 right-2 bg-secondary max-h-64 overflow-auto p-2">
-              {searchResults.map((message) => (
-                <div className="flex items-start space-x-4 p-2 bg-primary text-secondary-foreground rounded-lg max-w-md mx-auto mt-2 hover:bg-background hover:cursor-pointer">
-                  <Avatar className="">
-                    <AvatarImage
-                      src={members[message.uid]?.profilePicture}
-                      alt={members[message.uid]?.displayname}
-                    />
-                    <AvatarFallback>
-                      {members[message.uid]?.displayname?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold text-destructive">
-                        {members[message.uid]?.displayname}
-                      </span>
-                      <span className="text-sm text-foreground">
-                        {message.createdAt
-                          .toDate()
-                          .toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                      </span>
+                <Icon type="call" />
+              </span>
+              <span>
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex items-center bg-primary rounded px-1"
+                >
+                  <input
+                    type="text"
+                    value={searchMsg}
+                    onChange={handleSearchChange}
+                    placeholder="Search"
+                    className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
+                  />
+                  <button type="submit" className="text-gray-500 ml-2">
+                    <Icon type="search"></Icon>
+                  </button>
+                </form>
+              </span>
+
+              {searchResults && searchMsg && (
+                <div className="z-20 fixed top-8 right-2 bg-secondary max-h-64 overflow-auto p-2">
+                  {searchResults.map((message) => (
+                    <div className="flex items-start space-x-4 p-2 bg-primary text-secondary-foreground rounded-lg max-w-md mx-auto mt-2 hover:bg-background hover:cursor-pointer">
+                      <Avatar className="">
+                        <AvatarImage
+                          src={members[message.uid]?.profilePicture}
+                          alt={members[message.uid]?.displayname}
+                        />
+                        <AvatarFallback>
+                          {members[message.uid]?.displayname?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-destructive">
+                            {members[message.uid]?.displayname}
+                          </span>
+                          <span className="text-sm text-foreground">
+                            {message.createdAt
+                              .toDate()
+                              .toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                          </span>
+                        </div>
+                        <div className="mt-1">
+                          <p className="text-muted-foreground rounded-lg">
+                            {message.text}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-1">
-                      <p className="text-muted-foreground rounded-lg">
-                        {message.text}
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-2 px-2 pb-2 bg-background overflow-auto">
+              {messages.map((msg) =>
+                checkBefore(msg.uid) ? (
+                  <div
+                    key={msg.id}
+                    className="relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60"
+                  >
+                    <Avatar className="">
+                      <AvatarImage
+                        src={members[msg.uid]?.profilePicture}
+                        alt={members[msg.uid]?.displayname}
+                      />
+                      <AvatarFallback>
+                        {members[msg.uid]?.displayname?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-destructive">
+                      <p className="font-bold">
+                        {members[msg.uid]?.displayname}
                       </p>
+                      <div className="text-gray-300">{msg.text}</div>
+                      {msg.fileType === "image" && (
+                        <div className="">
+                          <Dialog>
+                            <DialogTrigger>
+                              <img
+                                src={msg.fileURL}
+                                alt="File Preview"
+                                className="max-w-full h-auto w-24"
+                              />
+                            </DialogTrigger>
+                            <DialogContent className="w-1/4">
+                              <img src={msg.fileURL} alt="" className="" />
+                            </DialogContent>
+                          </Dialog>
+                          <a
+                            href={msg.fileURL}
+                            download={msg.fileName}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            <div className="text-xs">
+                              {truncateString(msg.fileName, 12)}
+                            </div>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button onClick={() => handleEditMessage(msg)}>
+                              <Icon type="pen" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Edit</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button onClick={() => handleDeleteMessage(msg)}>
+                              <Icon type="trash" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="flex flex-col gap-2 px-2 pb-2 bg-background overflow-auto">
-            {messages.map((msg) =>
-              checkBefore(msg.uid) ? (
-                <div
-                  key={msg.id}
-                  className="relative group flex items-start space-x-2 mt-2 hover:bg-secondary/60"
-                >
-                  <Avatar className="">
-                    <AvatarImage
-                      src={members[msg.uid]?.profilePicture}
-                      alt={members[msg.uid]?.displayname}
-                    />
-                    <AvatarFallback>
-                      {members[msg.uid]?.displayname?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-destructive">
-                    <p className="font-bold">{members[msg.uid]?.displayname}</p>
-                    <div className="text-gray-300">{msg.text}</div>
+                ) : (
+                  <div
+                    className="relative group text-gray-300 pl-14 hover:bg-secondary/60"
+                    key={msg.id}
+                  >
+                    {msg.text}
                     {msg.fileType === "image" && (
                       <div className="">
                         <Dialog>
@@ -456,229 +563,180 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                         </a>
                       </div>
                     )}
-                  </div>
-                  <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => handleEditMessage(msg)}>
-                            <Icon type="pen" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => handleDeleteMessage(msg)}>
-                            <Icon type="trash" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </div>
-              ) : (
-                <div
-                  className="relative group text-gray-300 pl-14 hover:bg-secondary/60"
-                  key={msg.id}
-                >
-                  {msg.text}
-                  {msg.fileType === "image" && (
-                    <div className="">
-                      <Dialog>
-                        <DialogTrigger>
-                          <img
-                            src={msg.fileURL}
-                            alt="File Preview"
-                            className="max-w-full h-auto w-24"
-                          />
-                        </DialogTrigger>
-                        <DialogContent className="w-1/4">
-                          <img src={msg.fileURL} alt="" className="" />
-                        </DialogContent>
-                      </Dialog>
-                      <a
-                        href={msg.fileURL}
-                        download={msg.fileName}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
-                      >
-                        <div className="text-xs">
-                          {truncateString(msg.fileName, 12)}
-                        </div>
-                      </a>
+                    <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button onClick={() => handleEditMessage(msg)}>
+                              <Icon type="pen" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Edit</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button onClick={() => handleDeleteMessage(msg)}>
+                              <Icon type="trash" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
-                  )}
-                  <div className="absolute right-2 -top-3 hidden group-hover:flex gap-3 bg-secondary border-primary text-white px-2 py-1 rounded">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => handleEditMessage(msg)}>
-                            <Icon type="pen" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Edit</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => handleDeleteMessage(msg)}>
-                            <Icon type="trash" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Delete</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </div>
-                </div>
-              )
-            )}
-            <div ref={dummy}></div>
-          </div>
-        </div>
-
-        <Popover
-          open={!!editingMessage}
-          onOpenChange={() => setEditingMessage(null)}
-        >
-          <PopoverTrigger asChild>
-            <div></div>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 p-4">
-            <div>
-              <Input
-                value={editingMessage?.text || ""}
-                onChange={(e) =>
-                  setEditingMessage({ ...editingMessage, text: e.target.value })
-                }
-                placeholder="Edit message"
-                className="mb-4"
-              />
-              <Button
-                onClick={() => saveEditMessage(editingMessage?.text)}
-                className="w-full"
-              >
-                Save
-              </Button>
+                )
+              )}
+              <div ref={dummy}></div>
             </div>
-          </PopoverContent>
-        </Popover>
-        <Popover
-          open={!!deletingMessage}
-          onOpenChange={() => setDeletingMessage(null)}
-        >
-          <PopoverTrigger asChild>
-            <div></div>
-          </PopoverTrigger>
-          <PopoverContent className="w-64 p-4">
-            <div>
-              <p>Are you sure you want to delete this message?</p>
-              <div className="flex justify-end mt-4">
+          </div>
+
+          <Popover
+            open={!!editingMessage}
+            onOpenChange={() => setEditingMessage(null)}
+          >
+            <PopoverTrigger asChild>
+              <div></div>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-4">
+              <div>
+                <Input
+                  value={editingMessage?.text || ""}
+                  onChange={(e) =>
+                    setEditingMessage({
+                      ...editingMessage,
+                      text: e.target.value,
+                    })
+                  }
+                  placeholder="Edit message"
+                  className="mb-4"
+                />
                 <Button
-                  variant="outline"
-                  className="mr-2"
-                  onClick={() => setDeletingMessage(null)}
+                  onClick={() => saveEditMessage(editingMessage?.text)}
+                  className="w-full"
                 >
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={confirmDeleteMessage}>
-                  Delete
+                  Save
                 </Button>
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-        {checkIsImagePreview() && (
-          <div className="p-2 rounded bg-secondary">
-            <div className="w-24 bg-primary p-2">
-              <div className="relative flex justify-center mb-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button onClick={() => handleDeleteFile()}>
-                        <Icon type="trash" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            </PopoverContent>
+          </Popover>
+          <Popover
+            open={!!deletingMessage}
+            onOpenChange={() => setDeletingMessage(null)}
+          >
+            <PopoverTrigger asChild>
+              <div></div>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-4">
+              <div>
+                <p>Are you sure you want to delete this message?</p>
+                <div className="flex justify-end mt-4">
+                  <Button
+                    variant="outline"
+                    className="mr-2"
+                    onClick={() => setDeletingMessage(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" onClick={confirmDeleteMessage}>
+                    Delete
+                  </Button>
+                </div>
               </div>
-              <img
-                src={filePreview as string}
-                alt="File Preview"
-                className="max-w-full h-auto w-24"
-              />
-              <div className="text-xs">{truncateString(fileName, 12)}</div>
-            </div>
-          </div>
-        )}
-        {checkIsFilePreview() && (
-          <div className="p-2 rounded bg-secondary">
-            <div className="w-24 bg-primary p-2 flex flex-col justify-center">
-              <div className="relative mb-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button onClick={() => handleDeleteFile()}>
-                        <Icon type="trash" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            </PopoverContent>
+          </Popover>
+          {checkIsImagePreview() && (
+            <div className="p-2 rounded bg-secondary">
+              <div className="w-24 bg-primary p-2">
+                <div className="relative flex justify-center mb-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button onClick={() => handleDeleteFile()}>
+                          <Icon type="trash" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Delete</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <img
+                  src={filePreview as string}
+                  alt="File Preview"
+                  className="max-w-full h-auto w-24"
+                />
+                <div className="text-xs">{truncateString(fileName, 12)}</div>
               </div>
-              <Icon type="file" />
-              <div className="text-xs">{truncateString(fileName, 12)}</div>
             </div>
-          </div>
-        )}
+          )}
+          {checkIsFilePreview() && (
+            <div className="p-2 rounded bg-secondary">
+              <div className="w-24 bg-primary p-2 flex flex-col justify-center">
+                <div className="relative mb-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button onClick={() => handleDeleteFile()}>
+                          <Icon type="trash" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Delete</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <Icon type="file" />
+                <div className="text-xs">{truncateString(fileName, 12)}</div>
+              </div>
+            </div>
+          )}
 
-        <form onSubmit={sendMessage} className="flex space-x-2 mb-2 p-2 w-full">
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
-          <label
-            htmlFor="fileInput"
-            className="flex items-center justify-center w-10 h-10 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600"
+          <form
+            onSubmit={sendMessage}
+            className="flex space-x-2 mb-2 p-2 w-full"
           >
-            <Icon type="plus" />
-          </label>
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-grow p-2 rounded bg-gray-700 text-white"
-          />
-          <button
-            type="submit"
-            className="p-2 bg-blue-600 rounded text-white hover:bg-blue-700"
-          >
-            Send
-          </button>
-          <button
-            type="button"
-            className="emoji-picker-button"
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          >
-            😊
-          </button>
-        </form>
-        {showEmojiPicker && (
-          <div className="emoji-picker absolute right-0 bottom-16">
-            <EmojiPicker onEmojiClick={onEmojiClick} theme={Theme.DARK} />
-          </div>
-        )}
-      </div>
-    </div>
+            <input
+              type="file"
+              id="fileInput"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+            <label
+              htmlFor="fileInput"
+              className="flex items-center justify-center w-10 h-10 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600"
+            >
+              <Icon type="plus" />
+            </label>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-grow p-2 rounded bg-gray-700 text-white"
+            />
+            <button
+              type="submit"
+              className="p-2 bg-blue-600 rounded text-white hover:bg-blue-700"
+            >
+              Send
+            </button>
+            <button
+              type="button"
+              className="emoji-picker-button"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            >
+              😊
+            </button>
+          </form>
+          {showEmojiPicker && (
+            <div className="emoji-picker absolute right-0 bottom-16">
+              <EmojiPicker onEmojiClick={onEmojiClick} theme={Theme.DARK} />
+            </div>
+          )}
+        </div>
+        // </div>
+      )}
+    </>
   );
 };
 

@@ -1,22 +1,40 @@
-import path from 'path'
-import { app, ipcMain, Tray, Menu, nativeImage } from 'electron'
-import serve from 'electron-serve'
-import { createWindow } from './helpers'
+import path from 'path';
+import { app, ipcMain, Tray, Menu, nativeImage, BrowserWindow } from 'electron';
+import serve from 'electron-serve';
+import { createWindow } from './helpers';
 
 let mainWindow;
 let tray;
 const iconPath = path.join(__dirname, '../renderer/public/images/PHiscordLogoNOBG.png');
-    const icons = nativeImage.createFromPath(iconPath);
+const icons = nativeImage.createFromPath(iconPath);
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
-  serve({ directory: 'app' })
+  serve({ directory: 'app' });
 } else {
-  app.setPath('userData', `${app.getPath('userData')} (development)`)
+  app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
 
-// JUMP LIST
+function handleCommandLineArguments(argv = process.argv) {
+  console.log('Handling command-line arguments:', argv);
+  argv.forEach((arg) => {
+    console.log('Argument:', arg);
+    if (arg === '--toggle-mute') {
+      console.log('Sending toggle-mute event');
+      mainWindow.webContents.send('toggle-mute');
+    }
+    if (arg === '--toggle-deafen') {
+      console.log('Sending toggle-deafen event');
+      mainWindow.webContents.send('toggle-deafen');
+    }
+    if (arg === '--disconnect') {
+      console.log('Sending disconnect event');
+      mainWindow.webContents.send('disconnect');
+    }
+  });
+}
+
 app.setJumpList([
   {
     type: 'custom',
@@ -46,46 +64,48 @@ app.setJumpList([
 
     tray.setToolTip('PHiscord');
     tray.setContextMenu(contextMenu);
+
+    mainWindow = createWindow('main', {
+      width: 1000,
+      height: 600,
+      icon: icons,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+      },
+    });
+
+    if (isProd) {
+      mainWindow.loadURL('app://./home');
+    } else {
+      const port = process.argv[2];
+      mainWindow.loadURL(`http://localhost:${port}/home`);
+      mainWindow.webContents.openDevTools();
+    }
+
+    handleCommandLineArguments(process.argv);
   });
-
-  mainWindow = createWindow('main', {
-    width: 1000,
-    height: 600,
-    icon: icons,
-    // ini bisa dipakai untuk styling title bar
-    // titleBarStyle: 'hidden',
-    // titleBarOverlay: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
-  })
-
-  // Untuk hilangin tool barnya
-  // mainWindow.setMenu(null);
-
-  if (isProd) {
-    await mainWindow.loadURL('app://./home')
-  } else {
-    const port = process.argv[2]
-    await mainWindow.loadURL(`http://localhost:${port}/home`)
-    mainWindow.webContents.openDevTools()
-  }
-})()
+})();
 
 app.on('window-all-closed', () => {
-  app.quit()
-})
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
 ipcMain.on('message', async (event, arg) => {
-  event.reply('message', `${arg} World!`)
-})
+  event.reply('message', `${arg} World!`);
+});
 
 function toggleMute() {
-  console.log('Toggling mute');
+  if (mainWindow) {
+    mainWindow.webContents.send('toggle-mute');
+  }
 }
 
 function toggleDeafen() {
-  console.log('Toggling deafen');
+  if (mainWindow) {
+    mainWindow.webContents.send('toggle-deafen');
+  }
 }
 
 function quitApp() {
