@@ -41,10 +41,10 @@ function ServerHeaderInfo({
       <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center">
         {serverName}
         <div className="flex gap-2">
-          <div className="" onClick={toggleMember}>
+          <div className="hover:cursor-pointer" onClick={toggleMember}>
             <Icon type="member"></Icon>
           </div>
-          <div className="" onClick={toggleSetting}>
+          <div className="hover:cursor-pointer" onClick={toggleSetting}>
             <Icon type="setting"></Icon>
           </div>
         </div>
