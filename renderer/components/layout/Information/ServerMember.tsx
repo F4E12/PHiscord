@@ -73,16 +73,16 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
 
   return (
     <div className="p-4 bg-secondary rounded-md">
-      <h2 className="text-xl text-white mb-4">Server Members</h2>
+      <h2 className="text-xl text-accent-foreground mb-4">Server Members</h2>
       {owner && (
         <div>
-          <h3 className="text-lg text-white">Server Owner</h3>
+          <h3 className="text-lg text-secondary-foreground">Server Owner</h3>
           <MemberItem member={members[owner]} currUser={members[user.uid]} />
         </div>
       )}
       {adminList.length > 0 && (
         <div>
-          <h3 className="text-lg text-white">Server Admins</h3>
+          <h3 className="text-lg text-secondary-foreground">Server Admins</h3>
           {adminList.map((admin) => (
             <MemberItem
               key={admin}
@@ -94,7 +94,7 @@ const ServerMembers = ({ members, serverId }: ServerMembersProps) => {
       )}
       {memberList.length > 0 && (
         <div>
-          <h3 className="text-lg text-white">Server Members</h3>
+          <h3 className="text-lg text-secondary-foreground">Server Members</h3>
           {memberList.map((member) => (
             <MemberItem
               key={member}

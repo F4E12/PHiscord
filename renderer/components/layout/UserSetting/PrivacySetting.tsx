@@ -35,18 +35,18 @@ const PrivacySetting: React.FC<PrivacySettingProps> = ({
   };
 
   return (
-    <div className="p-6 bg-gray-800 rounded-md shadow-md w-full max-w-2xl mx-auto">
+    <div className="p-6 bg-secondary rounded-md shadow-md w-full max-w-2xl mx-auto">
       <h2 className="text-2xl text-white font-semibold mb-4">
         Privacy Settings
       </h2>
       <div className="mb-4">
-        <label className="block text-gray-400 mb-2">
+        <label className="block text-accent-foreground mb-2">
           Allow Stranger Message
         </label>
         <select
           value={messageSetting}
           onChange={(e) => setMessageSetting(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+          className="w-full px-4 py-2 bg-primary text-accent-foreground rounded focus:outline-none"
         >
           <option value="show">Show</option>
           <option value="blur">Blur</option>
@@ -54,13 +54,13 @@ const PrivacySetting: React.FC<PrivacySettingProps> = ({
         </select>
       </div>
       <div className="mb-4">
-        <label className="block text-gray-400 mb-2">
+        <label className="block text-accent-foreground-400 mb-2">
           Allow Stranger Voice Call
         </label>
         <select
           value={voiceCallSetting}
           onChange={(e) => setVoiceCallSetting(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+          className="w-full px-4 py-2 bg-primary text-accent-foreground rounded focus:outline-none"
         >
           <option value="show">Show</option>
           <option value="blur">Blur</option>

@@ -64,12 +64,14 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-800 rounded-md shadow-md w-full max-w-2xl mx-auto overflow-auto">
+    <div className="p-6 bg-accent rounded-md shadow-md w-full max-w-2xl mx-auto overflow-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl text-white font-semibold">General Settings</h2>
+        <h2 className="text-2xl text-foreground font-semibold">
+          General Settings
+        </h2>
         <button
           onClick={handleEditClick}
-          className="px-4 py-2 bg-form text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-800 text-foreground rounded hover:bg-blue-700"
         >
           {isEditing ? "Save" : "Edit User Profile"}
         </button>
@@ -82,25 +84,22 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
               {(userData?.displayname || "").charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-gray-800 bg-green-500"></span>
+          <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-background bg-green-500"></span>
         </div>
         <div className="ml-4">
           <div className="text-white text-xl font-semibold">
             {localData?.username}
           </div>
-          <div className="text-gray-400 text-sm flex items-center">
-            <span>#</span>
-            <span>1234</span>
-          </div>
+          <div className="text-accent-foreground text-sm flex items-center"></div>
         </div>
       </div>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label className="block text-gray-400 mb-2">User Name</label>
+          <label className="block text-accent-foreground mb-2">User Name</label>
           <input
             type="text"
             name="username"
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            className="w-full px-4 py-2 bg-primary text-accent-foreground rounded focus:outline-none"
             placeholder="IWasf4e12"
             value={localData?.username || ""}
             onChange={handleChange}
@@ -108,11 +107,13 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
           />
         </div>
         <div>
-          <label className="block text-gray-400 mb-2">Display Name</label>
+          <label className="block text-accent-foreground mb-2">
+            Display Name
+          </label>
           <input
             type="text"
             name="displayname"
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            className="w-full px-4 py-2 bg-primary text-accent-foreground rounded focus:outline-none"
             placeholder="Your display name"
             value={localData?.displayname || ""}
             onChange={handleChange}
@@ -120,22 +121,26 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
           />
         </div>
         <div>
-          <label className="block text-gray-400 mb-2">Date of Birth</label>
+          <label className="block text-accent-foreground mb-2">
+            Date of Birth
+          </label>
           <input
             type="date"
             name="DOB"
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            className="w-full px-4 py-2 bg-primary text-accent-foreground rounded focus:outline-none"
             value={localData?.DOB || ""}
             onChange={handleChange}
             readOnly={!isEditing}
           />
         </div>
         <div>
-          <label className="block text-gray-400 mb-2">Profile Picture</label>
+          <label className="block text-accent-foreground mb-2">
+            Profile Picture
+          </label>
           <input
             type="file"
             name="profilePicture"
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            className="w-full px-4 py-2 bg-accent text-accent-foreground rounded focus:outline-none"
             onChange={handleFileChange}
             disabled={!isEditing}
           />

@@ -143,7 +143,7 @@ const ServerInformation = ({
           ></ServerHeaderInfo>
           <div className="flex flex-col p-2 w-full">
             <div className="mt-2">
-              <h3 className="text-gray-400">Text Channels</h3>
+              <h3 className="text-gray-500">Text Channels</h3>
               <div className="flex flex-col space-y-1">
                 {textChannels.map((channel, index) => (
                   <div
@@ -158,7 +158,7 @@ const ServerInformation = ({
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-gray-400">Voice Channels</h3>
+              <h3 className="text-gray-500">Voice Channels</h3>
               <div className="flex flex-col space-y-1">
                 {voiceChannels.map((channel, index) => (
                   <div

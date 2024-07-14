@@ -9,6 +9,13 @@ import { getUserData } from "@/lib/retrieveuser";
 import { ref, onValue, set, update } from "firebase/database";
 import useUserPresence from "@/lib/useUserPresence";
 import { boolean } from "zod";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 
 export const updateUserData = async (userId: string, data: any) => {
   try {
@@ -44,6 +51,30 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
   const [previousMuteState, setPreviousMuteState] = useState(false);
   const [user] = useAuthState(auth);
   const presence = useUserPresence(user?.uid);
+  const { toast } = useToast();
+
+  const [colorClass, setColorClass] = useState("text-red-500");
+  const colorClasses = [
+    "text-red-500",
+    "text-green-500",
+    "text-blue-500",
+    "text-orange-500",
+    "text-purple-500",
+    "text-pink-500",
+    "text-yellow-500",
+  ];
+
+  useEffect(() => {
+    const changeColor = () => {
+      const newColorClass =
+        colorClasses[Math.floor(Math.random() * colorClasses.length)];
+      setColorClass(newColorClass);
+    };
+
+    const intervalId = setInterval(changeColor, 500);
+
+    return () => clearInterval(intervalId);
+  }, [colorClasses]);
 
   useEffect(() => {
     if (user) {
@@ -101,8 +132,17 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
     setSetting(!setting);
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(userData.id);
+    toast({
+      variant: "default",
+      title: "Success",
+      description: "Your ID has been copied.",
+    });
+  };
+
   return (
-    <div className="w-64 flex items-center justify-between p-2 bg-gray-900 rounded-md max-w-sm bottom-0">
+    <div className="w-64 flex items-center justify-between p-2 bg-card rounded-md max-w-sm bottom-0">
       <div className="flex items-center space-x-2">
         <div className="relative">
           <Avatar>
@@ -113,10 +153,22 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
           </Avatar>
         </div>
         <div className="flex flex-col">
-          <span className="text-white text-sm font-semibold">
-            {userData?.displayname}
+          <span className="text-foreground text-sm font-semibold">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    className={`${colorClass}`}
+                    onClick={() => copyToClipboard()}
+                  >
+                    {userData?.displayname}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Click to copy user id</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </span>
-          <span className="text-gray-400 text-xs">
+          <span className="text-card-foreground text-xs">
             {userData?.status ||
               (presence ? "online" : "offline") ||
               "No Status"}

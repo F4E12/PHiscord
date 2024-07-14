@@ -81,15 +81,19 @@ const OnlineFriends = ({ setSelectedFriend }: OnlineFriendProps) => {
     <div className="p-4 max-w-md mx-auto bg-card text-card-foreground rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Online Friends</h2>
       <ul>
-        {onlineFriends.map((friend) => (
-          <li
-            key={friend.id}
-            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
-            onClick={() => setSelectedFriend(friend.id)}
-          >
-            <span>{friend.displayname}</span>
-          </li>
-        ))}
+        {onlineFriends.length > 0 ? (
+          onlineFriends.map((friend) => (
+            <li
+              key={friend.id}
+              className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
+              onClick={() => setSelectedFriend(friend.id)}
+            >
+              <span>{friend.displayname}</span>
+            </li>
+          ))
+        ) : (
+          <div>You have no online friend</div>
+        )}
       </ul>
     </div>
   );

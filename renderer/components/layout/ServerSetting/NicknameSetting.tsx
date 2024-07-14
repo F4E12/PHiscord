@@ -68,28 +68,30 @@ const NicknameSetting = ({ serverId }) => {
   };
 
   return (
-    <div className="p-6 bg-background rounded-md shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center text-foreground">
-        Set Custom Nickname
-      </h2>
-      <form onSubmit={handleNicknameChange} className="space-y-4">
-        <Input
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          placeholder={initialNickname || "Enter your custom nickname"}
-          className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
-          disabled={loading}
-        />
-        {error && <p className="text-destructive text-center">{error}</p>}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full p-2 bg-form text-primary-foreground font-semibold rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          {loading ? "Updating..." : "Update Nickname"}
-        </Button>
-      </form>
+    <div className="items-center justify-center flex flex-col w-full">
+      <div className="p-6 bg-background rounded-md shadow-md h-48 w-80">
+        <h2 className="text-2xl font-bold mb-4 text-center text-foreground">
+          Set Custom Nickname
+        </h2>
+        <form onSubmit={handleNicknameChange} className="space-y-4">
+          <Input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            placeholder={initialNickname || "Enter your custom nickname"}
+            className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+            disabled={loading}
+          />
+          {error && <p className="text-destructive text-center">{error}</p>}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full p-2 bg-form text-foreground font-semibold rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {loading ? "Updating..." : "Update Nickname"}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };

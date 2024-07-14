@@ -21,7 +21,7 @@ export function InvitePopup({ link }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Invite Link</Button>
+        <Button variant="secondary">Invite Link</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-secondary">
         <DialogHeader>

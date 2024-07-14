@@ -49,9 +49,9 @@ const CreateChannelPopup = ({ serverId }: CreateChannelPopupProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center justify-between w-full px-4 py-2 bg-gray-900 rounded-md text-white hover:bg-gray-700 transition duration-200">
+        <button className="flex items-center justify-between w-full px-4 py-2 bg-card rounded-md text-foreground hover:bg-card/70 transition duration-200">
           <span>Create Channel</span>
-          <span className="flex items-center justify-center w-6 h-6 bg-gray-700 rounded-full text-white">
+          <span className="flex items-center justify-center w-6 h-6 bg-accent rounded-full text-accent-foreground">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <line
                 x1="10"
@@ -122,14 +122,17 @@ const CreateChannelPopup = ({ serverId }: CreateChannelPopupProps) => {
             </div>
           </RadioGroup>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="channel-name" className="text-right text-white">
+            <Label
+              htmlFor="channel-name"
+              className="text-right text-foreground"
+            >
               Channel Name
             </Label>
             <Input
               id="channel-name"
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
-              className="col-span-3 bg-gray-700 text-white"
+              className="col-span-3 bg-accent text-accent-foreground"
             />
           </div>
         </div>

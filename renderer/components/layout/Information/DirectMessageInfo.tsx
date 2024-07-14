@@ -62,9 +62,9 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
             value={searchItem}
             onChange={handleSearchConversation}
             placeholder="Search Conversation"
-            className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none w-52"
+            className="bg-primary rounded text-foreground placeholder-foreground focus:outline-none w-52"
           />
-          <button type="submit" className="text-gray-500 ml-2">
+          <button type="submit" className="text-foreground ml-2">
             <Icon type="search"></Icon>
           </button>
         </div>
@@ -89,7 +89,7 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>{friend.displayname}</AvatarFallback>
           </Avatar>
-          <span className="text-white">{friend.displayname}</span>
+          <span className="text-foreground">{friend.displayname}</span>
         </div>
       ))}
     </div>

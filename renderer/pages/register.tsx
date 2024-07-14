@@ -26,6 +26,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth, firestore } from "../firebase/firebaseApp";
+import TitleBar from "@/components/ui/titlebar";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -247,39 +248,49 @@ export function RegisterForm() {
           </div>
         </div>
         <Button type="submit" className={buttonVariants({ variant: "form" })}>
-          Submit
+          Register
         </Button>
       </form>
     </Form>
   );
 }
 
+let ipc;
+if (typeof window !== "undefined") {
+  ipc = (window as any).ipc;
+}
+let isElectron = ipc ? true : false;
+
 const RegisterPage = () => {
   return (
     <React.Fragment>
-      <Head>
-        <title>PHiscord | Register</title>
-      </Head>
-      <div className="bg-[url('/images/loginbg.svg')] h-screen grid place-items-center">
-        <div className="flex flex-col items-center bg-background w-4/12 px-10 py-5 rounded-lg">
-          <h1 className="text-primary text-2xl font-semibold">
-            Create an account
-          </h1>
-          <RegisterForm />
-          <div className="text-xs">
-            By registering, you agree to PHiscord's Terms of Service and Privacy
-            Policy
+      <div className="flex flex-col h-screen">
+        {isElectron && (
+          <div className="h-6 flex-shrink-0">
+            <TitleBar />
           </div>
-          <div className="text-form mt-3">
-            <Link href="/login">Already have an account?</Link>
+        )}
+        <div className="bg-[url('/images/loginbg.svg')] h-screen grid place-items-center">
+          <div className="flex flex-col items-center bg-background w-4/12 px-10 py-5 rounded-lg">
+            <h1 className="text-foreground text-2xl font-semibold">
+              Create an account
+            </h1>
+            <RegisterForm />
+            <div className="text-xs">
+              By registering, you agree to PHiscord's Terms of Service and
+              Privacy Policy
+            </div>
+            <div className="text-blue-700 mt-3">
+              <Link href="/login">Already have an account?</Link>
+            </div>
           </div>
         </div>
-      </div>
-      {/* <div className="w-full flex-wrap flex justify-center">
+        {/* <div className="w-full flex-wrap flex justify-center">
         <Link href="/home" className={buttonVariants()}>
           Home
         </Link>
       </div> */}
+      </div>
     </React.Fragment>
   );
 };

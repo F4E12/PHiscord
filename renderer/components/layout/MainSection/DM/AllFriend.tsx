@@ -86,29 +86,33 @@ const AllFriends = ({ setSelectedFriend }: AllFriendProps) => {
     <div className="p-4 max-w-md mx-auto bg-card text-card-foreground rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4">All Friends</h2>
       <ul>
-        {allFriends.map((friend) => (
-          <li
-            key={friend.id}
-            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
-            onClick={() => setSelectedFriend(friend.id)}
-          >
-            <span>{friend.displayname}</span>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => removeFriend(friend.id)}
-                className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover focus:outline-none focus:ring-2 focus:ring-destructive"
-              >
-                Remove
-              </button>
-              <button
-                onClick={() => blockFriend(friend.id)}
-                className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-muted text-muted-foreground rounded-md hover:bg-muted-hover focus:outline-none focus:ring-2 focus:ring-muted"
-              >
-                Block
-              </button>
-            </div>
-          </li>
-        ))}
+        {allFriends.length > 0 ? (
+          allFriends.map((friend) => (
+            <li
+              key={friend.id}
+              className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/70 hover:cursor-pointer group"
+              onClick={() => setSelectedFriend(friend.id)}
+            >
+              <span>{friend.displayname}</span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => removeFriend(friend.id)}
+                  className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover focus:outline-none focus:ring-2 focus:ring-destructive"
+                >
+                  Remove
+                </button>
+                <button
+                  onClick={() => blockFriend(friend.id)}
+                  className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-muted text-muted-foreground rounded-md hover:bg-muted-hover focus:outline-none focus:ring-2 focus:ring-muted"
+                >
+                  Block
+                </button>
+              </div>
+            </li>
+          ))
+        ) : (
+          <div className="">You have no friend</div>
+        )}
       </ul>
     </div>
   );

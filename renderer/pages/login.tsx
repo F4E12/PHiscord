@@ -23,6 +23,7 @@ import withGuest from "@/hoc/withGuest";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Toaster } from "@/components/ui/toaster";
 import { toast, useToast } from "@/components/ui/use-toast";
+import TitleBar from "@/components/ui/titlebar";
 
 const auth = getAuth();
 
@@ -99,31 +100,43 @@ export function LoginForm() {
           )}
         />
         <Button type="submit" className={buttonVariants({ variant: "form" })}>
-          Submit
+          Login
         </Button>
       </form>
     </Form>
   );
 }
 
+let ipc;
+if (typeof window !== "undefined") {
+  ipc = (window as any).ipc;
+}
+let isElectron = ipc ? true : false;
+
 const LoginPage = () => {
   return (
     <React.Fragment>
-      <Head>
-        <title>PHiscord | Login</title>
-      </Head>
-      <div className="fixed">
-        <ModeToggle />
-      </div>
-      <div className="bg-[url('/images/loginbg.svg')] h-screen grid place-items-center">
-        <div className="flex flex-col items-center bg-background w-4/12 px-10 py-5 rounded-lg">
-          <h1 className="text-primary text-2xl font-semibold">Welcome back!</h1>
-          <h3>We're so excited to see you again!</h3>
-          <LoginForm />
-          <div className="mt-5 w-full flex-wrap flex justify-center gap-1">
-            <p>Need an account?</p>
-            <div className="text-form">
-              <Link href="/register">Register</Link>
+      <div className="flex flex-col h-screen">
+        {isElectron && (
+          <div className="h-6 flex-shrink-0">
+            <TitleBar />
+          </div>
+        )}
+        {/* <div className="fixed">
+          <ModeToggle />
+        </div> */}
+        <div className="bg-[url('/images/loginbg.svg')] h-screen grid place-items-center">
+          <div className="flex flex-col items-center bg-background w-4/12 px-10 py-5 rounded-lg">
+            <h1 className="text-foreground text-2xl font-semibold">
+              Welcome back!
+            </h1>
+            <h3>We're so excited to see you again!</h3>
+            <LoginForm />
+            <div className="mt-5 w-full flex-wrap flex justify-center gap-1">
+              <p>Need an account?</p>
+              <div className="text-blue-700">
+                <Link href="/register">Register</Link>
+              </div>
             </div>
           </div>
         </div>

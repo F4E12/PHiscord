@@ -44,20 +44,24 @@ const BlockedFriends: React.FC = () => {
     <div className="p-4 max-w-md mx-auto bg-card text-card-foreground rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Blocked Friends</h2>
       <ul>
-        {blockedFriends.map((friend) => (
-          <li
-            key={friend.id}
-            className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
-          >
-            <span>{friend.displayname}</span>
-            <button
-              onClick={() => unblockFriend(friend.id)}
-              className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover focus:outline-none focus:ring-2 focus:ring-destructive"
+        {blockedFriends.length > 0 ? (
+          blockedFriends.map((friend) => (
+            <li
+              key={friend.id}
+              className="flex items-center justify-between p-2 mb-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary-hover group"
             >
-              Unblock
-            </button>
-          </li>
-        ))}
+              <span>{friend.displayname}</span>
+              <button
+                onClick={() => unblockFriend(friend.id)}
+                className="opacity-0 group-hover:opacity-100 text-sm px-2 py-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover focus:outline-none focus:ring-2 focus:ring-destructive"
+              >
+                Unblock
+              </button>
+            </li>
+          ))
+        ) : (
+          <div className="">You have no blocked user</div>
+        )}
       </ul>
     </div>
   );

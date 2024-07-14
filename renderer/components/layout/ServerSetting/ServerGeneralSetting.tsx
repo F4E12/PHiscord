@@ -87,10 +87,12 @@ const GeneralSettings = ({ serverId }) => {
   return (
     <div className="p-6 bg-background rounded-md shadow-md w-full max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl text-white font-semibold">General Settings</h2>
+        <h2 className="text-2xl text-foreground font-semibold">
+          General Settings
+        </h2>
         <button
           onClick={handleEditClick}
-          className="px-4 py-2 bg-form text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-form text-foreground rounded hover:bg-blue-700"
         >
           {isEditing ? "Save" : "Edit Server Profile"}
         </button>
@@ -107,11 +109,13 @@ const GeneralSettings = ({ serverId }) => {
             <span className="absolute bottom-0 right-0 block h-4 w-4 rounded-full ring-2 ring-gray-800 bg-green-500"></span>
           </div>
           <div className="ml-6">
-            <label className="block text-gray-400 mb-2">Server Name</label>
+            <label className="block text-accent-foreground mb-2">
+              Server Name
+            </label>
             <input
               type="text"
               name="name"
-              className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+              className="w-full px-4 py-2 bg-primary text-foreground rounded focus:outline-none"
               placeholder="Your display name"
               value={localData?.name || ""}
               onChange={handleChange}
@@ -120,11 +124,13 @@ const GeneralSettings = ({ serverId }) => {
           </div>
         </div>
         <div>
-          <label className="block text-gray-400 mb-2">Profile Picture</label>
+          <label className="block text-accent-foreground mb-2">
+            Profile Picture
+          </label>
           <input
             type="file"
             name="profilePicture"
-            className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+            className="w-full px-4 py-2 bg-primary text-foreground rounded focus:outline-none"
             onChange={handleFileChange}
             disabled={!isEditing}
           />
@@ -132,7 +138,7 @@ const GeneralSettings = ({ serverId }) => {
         {counter > 0 && (
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-green-600 text-accent-foreground rounded hover:bg-green-700"
           >
             Save Changes
           </button>

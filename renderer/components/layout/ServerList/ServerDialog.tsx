@@ -116,7 +116,7 @@ const ServerDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full text-green-500 transition-all duration-300 ease-in-out hover:bg-green-500 hover:text-white">
+        <button className="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full text-form transition-all duration-300 ease-in-out hover:bg-foreground hover:text-foreground">
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
           </svg>
@@ -185,14 +185,14 @@ const ServerDialog = ({
               <input
                 type="file"
                 name="profilePicture"
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+                className="w-full px-4 py-2 bg-background text-foreground rounded focus:outline-none"
                 onChange={handleFileChange}
               />
             </div>
             <DialogFooter>
               <Button
                 onClick={handleCreateServer}
-                className="bg-form hover:bg-form/75"
+                className="bg-form hover:bg-form/75 text-foreground"
               >
                 Create Server
               </Button>

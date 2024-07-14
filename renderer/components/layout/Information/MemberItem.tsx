@@ -215,7 +215,7 @@ const MemberItem = ({ member, currUser }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center space-x-2 bg-gray-700 p-2 rounded-md mb-2">
+          <div className="flex items-center space-x-2 bg-background p-2 rounded-md mb-2">
             <Avatar>
               <AvatarImage
                 src={member?.profilePicture}
@@ -226,10 +226,10 @@ const MemberItem = ({ member, currUser }) => {
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="text-white font-bold">
+              <div className="text-foreground font-bold">
                 {member.displayname || "Unknown"}
               </div>
-              <div className="text-gray-400 text-sm">@{member?.username}</div>
+              <div className="text-foreground text-sm">@{member?.username}</div>
             </div>
           </div>
         </TooltipTrigger>
@@ -249,11 +249,11 @@ const MemberItem = ({ member, currUser }) => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-grow p-2 rounded bg-gray-700 text-white w-40"
+                className="flex-grow p-2 rounded bg-background text-white w-40"
               />
               <button
                 type="submit"
-                className="p-2 bg-blue-600 rounded text-white hover:bg-blue-700"
+                className="p-2 bg-form rounded text-white hover:bg-form/70"
               >
                 Send
               </button>

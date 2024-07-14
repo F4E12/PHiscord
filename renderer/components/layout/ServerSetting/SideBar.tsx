@@ -14,7 +14,7 @@ export const SideBar = ({
 }: GeneralSettingProps) => {
   let joinLink = "phiscord.join/" + serverId;
   return (
-    <div className="w-1/4 h-full bg-gray-800 text-white flex flex-col p-4">
+    <div className="w-1/4 h-full bg-secondary text-accent-foreground flex flex-col p-4">
       <div className="mb-8">
         <h1 className="text-xl font-bold">Settings</h1>
       </div>

@@ -411,7 +411,7 @@ const CallComponent = ({
       <div className="flex mb-4 justify-center">
         <button
           onClick={toggleMute}
-          className="mr-2 p-2 bg-gray-800 text-white rounded"
+          className="mr-2 p-2 bg-border text-foreground rounded"
         >
           {connectedUsers.find((user) => user.uid === uid)?.isMuted
             ? "Unmute"
@@ -419,7 +419,7 @@ const CallComponent = ({
         </button>
         <button
           onClick={toggleDeafen}
-          className="mr-2 p-2 bg-gray-800 text-white rounded"
+          className="mr-2 p-2 bg-bordeer text-foreground rounded"
         >
           {connectedUsers.find((user) => user.uid === uid)?.isDeafened
             ? "Undeafen"
@@ -427,13 +427,13 @@ const CallComponent = ({
         </button>
         <button
           onClick={toggleCamera}
-          className="mr-2 p-2 bg-gray-800 text-white rounded"
+          className="mr-2 p-2 bg-border text-foreground rounded"
         >
           {isCameraOn ? "Turn Camera Off" : "Turn Camera On"}
         </button>
         <button
           onClick={leaveChannel}
-          className="mr-2 p-2 bg-red-800 text-white rounded"
+          className="mr-2 p-2 bg-destructive text-foreground rounded"
         >
           {channelName === "dm-call" ? "Leave Call" : "Leave Channel"}
         </button>

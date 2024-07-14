@@ -459,9 +459,9 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                 value={searchMsg}
                 onChange={handleSearchChange}
                 placeholder="Search"
-                className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
+                className="bg-primary rounded text-card-foreground placeholder-card-foreground/70 focus:outline-none"
               />
-              <button type="submit" className="text-gray-500 ml-2">
+              <button type="submit" className="text-foreground ml-2">
                 <Icon type="search"></Icon>
               </button>
             </form>
@@ -524,7 +524,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                 </Avatar>
                 <div className="text-destructive">
                   <p className="font-bold">{members[msg.uid]?.displayname}</p>
-                  <div className="text-gray-300">{msg?.text}</div>
+                  <div className="text-foreground">{msg?.text}</div>
                   {msg?.fileType != "image" && msg?.fileType != "" && (
                     <div className="">
                       <a
@@ -594,8 +594,8 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
               </div>
             ) : (
               <div
-                className={`relative group text-gray-300 pl-14 hover:bg-secondary/60 ${
-                  msg.isMentioned ? "bg-form" : ""
+                className={`relative group text-foreground pl-14 hover:bg-secondary/60 ${
+                  msg.isMentioned ? "bg-blue-500" : ""
                 }`}
                 key={msg.id}
               >
@@ -777,7 +777,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         />
         <label
           htmlFor="fileInput"
-          className="flex items-center justify-center w-10 h-10 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600"
+          className="flex items-center justify-center w-10 h-10 bg-primary text-white rounded cursor-pointer hover:bg-gray-600"
         >
           <Icon type="plus" />
         </label>
@@ -786,7 +786,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
           value={newMessage}
           onChange={handleChangeInput}
           placeholder="Type a message..."
-          className="flex-grow p-2 rounded bg-gray-700 text-white"
+          className="flex-grow p-2 rounded text-foreground placeholder-foreground/70 bg-primary"
         />
         <button
           type="submit"
@@ -803,11 +803,11 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
         </button>
       </form>
       {showMentionSuggestions && (
-        <div className="absolute bg-secondary rounded mt-2 p-2 bottom-16">
+        <div className="absolute bg-accent rounded mt-2 p-2 bottom-16 border-2">
           {mentionSuggestions.map((user) => (
             <div
               key={user.id}
-              className="p-1 cursor-pointer hover:bg-gray-600"
+              className="p-1 cursor-pointer hover:bg-primary"
               onClick={() => handleMentionSelect(user.displayname)}
             >
               {user.displayname}

@@ -3,6 +3,7 @@ import { firestore, auth } from "@/firebase/firebaseApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
 
 const AddFriend: React.FC = () => {
   const [user] = useAuthState(auth);
@@ -81,20 +82,30 @@ const AddFriend: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-2">
-      <input
-        type="text"
-        value={targetUserId}
-        onChange={(e) => setTargetUserId(e.target.value)}
-        placeholder="Enter user ID to send friend request"
-        className="w-full px-4 py-2 bg-primary text-white rounded focus:outline-none"
-      />
-      <button
-        onClick={handleSendRequest}
-        className="px-4 py-2 bg-form text-white rounded hover:bg-form/70 w-32"
-      >
-        Add Friend
-      </button>
+    <div className="">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={targetUserId}
+          onChange={(e) => setTargetUserId(e.target.value)}
+          placeholder="Enter user ID to send friend request"
+          className="w-full px-4 py-2 bg-primary text-white rounded focus:outline-none"
+        />
+        <button
+          onClick={handleSendRequest}
+          className="px-4 py-2 bg-form text-white rounded hover:bg-form/70 w-32"
+        >
+          Add Friend
+        </button>
+      </div>
+      <div className="flex items-center justify-center h-full mt-10">
+        <Image
+          src="/images/AddFriend.png"
+          width={500}
+          height={500}
+          alt="Add Friend"
+        ></Image>
+      </div>
     </div>
   );
 };

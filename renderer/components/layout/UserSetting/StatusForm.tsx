@@ -5,7 +5,7 @@ interface StatusFormProps {
   userData: any;
 }
 
-const predefinedStatuses = ["do_not_disturb", "idle"];
+const predefinedStatuses = ["Do Not Disturb", "Idle"];
 
 const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
   const [status, setStatus] = useState("");
@@ -16,7 +16,7 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
     if (predefinedStatuses.includes(userData.status)) {
       setStatus(userData.status);
     } else {
-      setStatus("custom");
+      setStatus("Custom");
       setCustomStatus(userData.status);
     }
   }, [userData]);
@@ -26,7 +26,7 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
   ) => {
     const selectedStatus = e.target.value;
     setStatus(selectedStatus);
-    if (selectedStatus !== "custom") {
+    if (selectedStatus !== "Custom") {
       await updateStatusInFirestore(selectedStatus);
       setCustomStatus("");
     }
@@ -40,7 +40,7 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
   const handleCustomStatusSubmit = async (e: React.FormEvent) => {
     setCounter2(0);
     e.preventDefault();
-    if (status === "custom" && customStatus) {
+    if (status === "Custom" && customStatus) {
       await updateStatusInFirestore(customStatus);
     }
   };
@@ -55,21 +55,23 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
 
   return (
     <div className="space-y-4">
-      <h1 className=" text-2xl text-white font-semibold">SET YOUR STATUS</h1>
+      <h1 className=" text-2xl text-foreground font-semibold">
+        SET YOUR STATUS
+      </h1>
       <div>
-        <label htmlFor="status" className="block text-gray-400 mb-2">
+        <label htmlFor="status" className="block text-foreground mb-2">
           Choose your status:
         </label>
         <select
           id="status"
           value={status}
           onChange={handleStatusChange}
-          className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+          className="w-full px-4 py-2 bg-primary text-foreground rounded focus:outline-none"
         >
           <option value="">Select...</option>
-          <option value="do_not_disturb">Do Not Disturb</option>
-          <option value="idle">Idle</option>
-          <option value="custom">Custom</option>
+          <option value="Do Not Disturb">Do Not Disturb</option>
+          <option value="Idle">Idle</option>
+          <option value="Custom">Custom</option>
         </select>
       </div>
       {status === "custom" && (

@@ -98,7 +98,7 @@ function Roles({ serverId, members }: RolesProps) {
   };
 
   return (
-    <div className="w-full min-h-screen bg-primary-foreground text-gray-100">
+    <div className="w-full min-h-screen bg-primary-foreground text-card-foreground">
       {user.uid === serverDetails.ownerId ? (
         <div className="py-10">
           <h1 className="text-3xl font-bold text-center mb-8">
@@ -110,7 +110,7 @@ function Roles({ serverId, members }: RolesProps) {
                 checkCurrRoles(memberId) !== "owner" && (
                   <div
                     key={members[memberId].id}
-                    className="flex items-center justify-between p-4 border-b border-gray-700 last:border-b-0"
+                    className="flex items-center justify-between p-4 border-b border-secondary last:border-b-0"
                   >
                     <div className="flex items-center space-x-4">
                       <Avatar>
@@ -129,13 +129,13 @@ function Roles({ serverId, members }: RolesProps) {
                         <div className="text-lg font-semibold">
                           {members[memberId].displayname || "Unknown"}
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-accent-foreground">
                           @{members[memberId].username}
                         </div>
                       </div>
                     </div>
                     <select
-                      className="bg-background text-white rounded-lg p-2 cursor-pointer hover:bg-background/80 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors duration-200"
+                      className="bg-background text-accent-foreground rounded-lg p-2 cursor-pointer hover:bg-background/80 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors duration-200"
                       onChange={(e) =>
                         handleChangeRole(serverId, memberId, e.target.value)
                       }

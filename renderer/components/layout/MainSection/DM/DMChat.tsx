@@ -477,9 +477,9 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                     value={searchMsg}
                     onChange={handleSearchChange}
                     placeholder="Search"
-                    className="bg-primary rounded text-gray-300 placeholder-gray-500 focus:outline-none"
+                    className="bg-primary rounded text-foreground placeholder-foreground/70 focus:outline-none"
                   />
-                  <button type="submit" className="text-gray-500 ml-2">
+                  <button type="submit" className="text-foreground ml-2">
                     <Icon type="search"></Icon>
                   </button>
                 </form>
@@ -544,7 +544,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                       <p className="font-bold">
                         {members[msg.uid]?.displayname}
                       </p>
-                      <div className="text-gray-300">{msg.text}</div>
+                      <div className="text-foreground">{msg?.text}</div>
                       {msg.fileType === "image" && (
                         <div className="">
                           <Dialog>
@@ -598,7 +598,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                   </div>
                 ) : (
                   <div
-                    className="relative group text-gray-300 pl-14 hover:bg-secondary/60"
+                    className="relative group text-foreground pl-14 hover:bg-secondary/60"
                     key={msg.id}
                   >
                     {msg.text}
@@ -769,7 +769,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
             />
             <label
               htmlFor="fileInput"
-              className="flex items-center justify-center w-10 h-10 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600"
+              className="flex items-center justify-center w-10 h-10 bg-primary text-white rounded cursor-pointer hover:bg-gray-600"
             >
               <Icon type="plus" />
             </label>
@@ -778,7 +778,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
-              className="flex-grow p-2 rounded bg-gray-700 text-white"
+              className="flex-grow p-2 rounded bg-background text-white"
             />
             <button
               type="submit"
