@@ -138,22 +138,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
           });
         });
 
-        // NOTIFICATION
-        // newMessages.forEach((message) => {
-        //   if (
-        //     message.createdAt &&
-        //     message.createdAt.toMillis() > lastCheckedTimeRef.current &&
-        //     message.uid !== user?.uid
-        //   ) {
-        //     notify(message);
-        //   }
-        // });
-
-        // if (newMessages.length > 0) {
-        //   lastCheckedTimeRef.current = Date.now(); // Update last checked time
-        // }
-        // // Update the messages
-        // lastUserRef.current = "null";
         setMessages(newMessages);
         const lastMessage = newMessages[newMessages.length - 1];
 
@@ -163,30 +147,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       return () => unsubscribe();
     }
   }, [channel]);
-  // NOTIFICATION
-  // const notify = (message) => {
-  //   if (Notification.permission === "granted") {
-  //     new Notification(
-  //       members[message.uid]?.displayname + " (" + channel.name + ")",
-  //       {
-  //         body: message.text,
-  //         icon: members[message.uid]?.profilePicture,
-  //       }
-  //     );
-  //   } else if (Notification.permission !== "denied") {
-  //     Notification.requestPermission().then((permission) => {
-  //       if (permission === "granted") {
-  //         new Notification(
-  //           members[message.uid]?.displayname + " (" + channel.name + ")",
-  //           {
-  //             body: message.text,
-  //             icon: members[message.uid]?.profilePicture,
-  //           }
-  //         );
-  //       }
-  //     });
-  //   }
-  // };
 
   // Handle input and mentioning
   const [mentionSuggestions, setMentionSuggestions] = useState([]);
