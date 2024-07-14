@@ -30,11 +30,9 @@ const ServerCall = ({
 
     const unsubscribe = onSnapshot(usersCollectionRef, (snapshot) => {
       const users = snapshot.docs.map((doc) => doc.data());
-      console.log("USERS:", users);
       setConnectedUsers(users);
     });
 
-    console.log(connectedUsers);
     return () => unsubscribe();
   }, [join, server, channelId]);
 

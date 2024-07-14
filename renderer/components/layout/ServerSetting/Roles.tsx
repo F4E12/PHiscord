@@ -43,9 +43,7 @@ function Roles({ serverId, members }: RolesProps) {
       const data = await getServerDetails(serverId);
       setServerDetails(data);
     } catch (error) {
-      console.log("ERROR");
     } finally {
-      console.log("fetch Server finish");
       setLoading(false);
     }
   };
@@ -58,12 +56,6 @@ function Roles({ serverId, members }: RolesProps) {
 
     return () => unsubscribeServer();
   }, [serverId]);
-
-  // console.log(serverDetails?.members);
-  // console.log(serverDetails?.ownerId);
-  // console.log(serverDetails?.admin);
-  // console.log(serverDetails);
-  console.log(members);
 
   const handleChangeRole = async (serverId, userId, newRole) => {
     try {
@@ -80,14 +72,12 @@ function Roles({ serverId, members }: RolesProps) {
           admin: arrayRemove(userId),
         });
       }
-      console.log("Role updated successfully");
     } catch (error) {
       console.error("Error updating role:", error);
     }
   };
 
   const checkCurrRoles = (memberId) => {
-    console.log(memberId);
     if (memberId == serverDetails.ownerId) {
       return "owner";
     } else if (serverDetails.admin && serverDetails.admin.includes(memberId)) {

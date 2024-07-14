@@ -17,19 +17,14 @@ if (isProd) {
 }
 
 function handleCommandLineArguments(argv = process.argv) {
-  console.log('Handling command-line arguments:', argv);
   argv.forEach((arg) => {
-    console.log('Argument:', arg);
     if (arg === '--toggle-mute') {
-      console.log('Sending toggle-mute event');
       mainWindow.webContents.send('toggle-mute');
     }
     if (arg === '--toggle-deafen') {
-      console.log('Sending toggle-deafen event');
       mainWindow.webContents.send('toggle-deafen');
     }
     if (arg === '--disconnect') {
-      console.log('Sending disconnect event');
       mainWindow.webContents.send('disconnect');
     }
   });

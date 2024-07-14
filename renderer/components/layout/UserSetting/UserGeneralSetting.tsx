@@ -43,7 +43,6 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
   const handleSubmit = async (e) => {
     setCounter(0);
     e.preventDefault();
-    console.log("UPDAE");
     try {
       let updatedData = localData;
       let downloadURL;
@@ -56,7 +55,6 @@ const GeneralSettings = ({ userData, onProfileUpdate, onImageChange }) => {
       }
       onProfileUpdate(updatedData);
       onImageChange(downloadURL);
-      console.log(downloadURL);
     } catch (error) {
       console.error("Error uploading image:", error);
     }

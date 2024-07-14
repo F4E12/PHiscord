@@ -110,7 +110,6 @@ const ServerDialog = ({
     if (file) {
       setSelectedFile(file);
       setFilePreview(URL.createObjectURL(file));
-      console.log("IMAGES", URL.createObjectURL(file));
     }
   };
   return (

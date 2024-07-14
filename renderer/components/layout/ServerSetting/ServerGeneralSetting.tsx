@@ -27,7 +27,6 @@ const GeneralSettings = ({ serverId }) => {
           setServerDetail(data);
           setLocalData(data);
         } else {
-          console.log("No such server!");
         }
       },
       (error) => {
@@ -64,7 +63,6 @@ const GeneralSettings = ({ serverId }) => {
   const handleSubmit = async (e) => {
     setCounter(0);
     e.preventDefault();
-    console.log("UPDAE");
     try {
       let updatedData = localData;
       let downloadURL;
@@ -75,8 +73,6 @@ const GeneralSettings = ({ serverId }) => {
           profilePicture: downloadURL,
         };
       }
-      console.log(updatedData);
-      console.log(downloadURL);
       await updateServerData(serverId, updatedData);
     } catch (error) {
       console.error("Error uploading image:", error);

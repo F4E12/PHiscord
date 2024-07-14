@@ -26,7 +26,6 @@ const AllFriends = ({ setSelectedFriend }: AllFriendProps) => {
     const unsubscribe = onSnapshot(userDocRef, async (docSnapshot) => {
       if (docSnapshot.exists()) {
         const userData = docSnapshot.data();
-        console.log(userData.friends);
 
         if (userData && userData.friends) {
           const friends = await Promise.all(

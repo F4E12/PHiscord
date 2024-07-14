@@ -260,7 +260,6 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
             `notifications/${memberId}/messages`,
             messageDocRef.id
           );
-          console.log("Creating notification for user:", memberId);
           await setDoc(notificationRef, {
             type: "message",
             text: filterMsg,
@@ -271,10 +270,8 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
             profilePicture: members[user.uid].profilePicture,
             createdAt: serverTimestamp(),
           });
-          console.log("Notification created for user:", memberId);
 
           setTimeout(async () => {
-            console.log("Removing notification for user:", memberId);
             try {
               await deleteDoc(notificationRef);
             } catch (error) {
@@ -404,7 +401,6 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
         `notifications/${friendId}/messages`,
         channelId
       );
-      console.log("Creating notification for user:", friendId);
       await setDoc(notificationRef, {
         type: "dm-call",
         senderName: members[user.uid].displayname,
@@ -778,7 +774,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
-              className="flex-grow p-2 rounded bg-background text-white"
+              className="flex-grow p-2 rounded bg-primary text-white"
             />
             <button
               type="submit"

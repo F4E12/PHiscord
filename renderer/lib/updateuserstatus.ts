@@ -11,7 +11,6 @@ async function updateUserStatus(userId: string, status: string) {
       status: status,
       last_changed: new Date().toISOString()
     });
-    console.log("User status updated to:", status);
   } catch (error) {
     console.error("Error updating user status:", error);
   }

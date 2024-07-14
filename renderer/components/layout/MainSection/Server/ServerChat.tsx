@@ -90,7 +90,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
           const data = doc.data();
           setServerName(data.name); // Update state if document data changes
         } else {
-          console.log("No such server!");
         }
       },
       (error) => {
@@ -284,7 +283,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     if (newMessage.trim() === "" && filePreview === "") return;
 
     const filterMsg = filter?.clean(newMessage);
-    console.log("Filtered message:", filterMsg);
     setNewMessage("");
 
     // Add message to Firestore
@@ -303,8 +301,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       }
     );
 
-    console.log("Message added to Firestore with ID:", messageDocRef.id);
-
     // Create notification for each member, excluding the sender
     for (const [memberId, memberInfo] of Object.entries(members)) {
       if (memberId !== user?.uid) {
@@ -314,7 +310,6 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
             `notifications/${memberId}/messages`,
             messageDocRef.id
           );
-          console.log("Creating notification for user:", memberId);
           await setDoc(notificationRef, {
             type: "message",
             text: filterMsg,
@@ -325,10 +320,8 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
             profilePicture: members[user.uid].profilePicture,
             createdAt: serverTimestamp(),
           });
-          console.log("Notification created for user:", memberId);
 
           setTimeout(async () => {
-            console.log("Removing notification for user:", memberId);
             try {
               await deleteDoc(notificationRef);
             } catch (error) {

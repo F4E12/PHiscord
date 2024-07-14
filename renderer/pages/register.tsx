@@ -90,15 +90,12 @@ export function RegisterForm() {
 
       onAuthStateChanged(auth, async (user) => {
         if (user) {
-          console.log(user);
           const userDocRef = doc(firestore, "users", user.uid);
           await setDoc(userDocRef, currentDetails);
           router.push("/login"); // Redirect to login page after successful registration
         }
       });
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const months = Array.from({ length: 12 }, (v, k) => k + 1).map((month) => (

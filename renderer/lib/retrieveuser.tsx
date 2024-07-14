@@ -8,7 +8,6 @@ export const getUserData = async (userId: string) => {
     if (userDoc.exists()) {
       return userDoc.data();
     } else {
-      console.log("No such document!");
       return null;
     }
   } catch (error) {
@@ -19,7 +18,6 @@ export const getUserData = async (userId: string) => {
 
 export const getUsersInServer = async (serverId: string) => {
   try {
-    console.log(`Fetching users for server ID: ${serverId}`);
     const serverDocRef = doc(firestore, "servers", serverId);
     const serverSnapshot = await getDoc(serverDocRef);
 
@@ -29,7 +27,6 @@ export const getUsersInServer = async (serverId: string) => {
     }
 
     const serverData = serverSnapshot.data();
-    console.log(`Server data:`, serverData);
 
     if (serverData && serverData.members) {
       const userRefs = serverData.members.map((userId: string) =>
@@ -41,7 +38,6 @@ export const getUsersInServer = async (serverId: string) => {
       );
 
       const users = userSnapshots.map((snapshot) => snapshot.data());
-      console.log(`Fetched users:`, users);
 
       return users;
     }

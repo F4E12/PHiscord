@@ -26,13 +26,7 @@ const HomePage = () => {
         where("createdAt", ">", new Date())
       );
 
-      console.log(
-        "Listening to notifications at:",
-        `notifications/${user.uid}/messages`
-      );
-
       const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
-        console.log("Snapshot received:", snapshot.docs);
         const notificationsArray = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

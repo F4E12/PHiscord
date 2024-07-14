@@ -181,7 +181,6 @@ const MemberItem = ({ member, currUser }) => {
           `notifications/${member.id}/messages`,
           messageDocRef.id
         );
-        console.log("Creating notification for user:", member.id);
         await setDoc(notificationRef, {
           type: "message",
           text: filterMsg,
@@ -192,14 +191,12 @@ const MemberItem = ({ member, currUser }) => {
           profilePicture: currUser.profilePicture,
           createdAt: serverTimestamp(),
         });
-        console.log("Notification created for user:", member.id);
 
         setTimeout(async () => {
-          console.log("Removing notification for user:", member.id);
           try {
             await deleteDoc(notificationRef);
           } catch (error) {
-            console.error("Error removing notification:", error);
+            throw error;
           }
         }, 10);
       } catch (error) {

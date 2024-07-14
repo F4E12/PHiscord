@@ -51,7 +51,6 @@ export function LoginForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const user = await signInUser(values.email, values.password);
-      console.log("User signed in: ", user);
       router.push("/home");
     } catch (error) {
       console.error("Error signing in: ", error.message);

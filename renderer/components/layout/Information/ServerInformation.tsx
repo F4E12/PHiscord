@@ -44,7 +44,6 @@ const ServerInformation = ({
       const data = await getServerDetails(selectedServer);
       setServerDetails(data);
     } catch (error) {
-      console.log("ERROR");
     } finally {
       setLoading(false);
     }
@@ -100,7 +99,6 @@ const ServerInformation = ({
       const fetchedVoiceChannels = await getVoiceChannels(selectedServer);
       setTextChannels(fetchedTextChannels);
       setVoiceChannels(fetchedVoiceChannels);
-      console.log(fetchedTextChannels);
     } catch (error) {
       console.error("Error fetching channels:", error);
     } finally {

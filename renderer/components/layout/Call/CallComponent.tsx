@@ -28,9 +28,7 @@ const CallComponent = ({
     try {
       const userRef = ref(database, `users/${userId}`);
       await update(userRef, data);
-      console.log("User data updated successfully in Realtime Database");
     } catch (error) {
-      console.error("Error updating user data in Realtime Database:", error);
       throw error;
     }
   };
@@ -48,11 +46,6 @@ const CallComponent = ({
         } else if (action === "remove") {
           await deleteDoc(userDocRef);
         }
-        console.log(
-          `User data ${
-            action === "add" ? "added to" : "removed from"
-          } Firestore`
-        );
       } catch (error) {
         console.error(`Error updating user data in Firestore:`, error);
         throw error;
@@ -69,11 +62,6 @@ const CallComponent = ({
         } else if (action === "remove") {
           await deleteDoc(userDocRef);
         }
-        console.log(
-          `User data ${
-            action === "add" ? "added to" : "removed from"
-          } Firestore`
-        );
       } catch (error) {
         console.error(`Error updating user data in Firestore:`, error);
         throw error;
@@ -114,9 +102,7 @@ const CallComponent = ({
       });
       setClient(agoraClient);
 
-      console.log("Joining channel:", channelId);
       await agoraClient.join(appId, channelId, token, uid);
-      console.log("Joined channel successfully");
 
       const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       const videoTrack = await AgoraRTC.createCameraVideoTrack();
@@ -126,9 +112,7 @@ const CallComponent = ({
       // Disable video track by default
       await videoTrack.setEnabled(false);
 
-      console.log("Publishing local audio track");
       await agoraClient.publish([audioTrack]);
-      console.log("Published local audio track");
 
       // Add the local user to the connected users state
       const localUserData = {
@@ -213,11 +197,9 @@ const CallComponent = ({
             placeholder.style.display = "flex";
           }
         }
-        console.log(`User ${user.uid} unpublished their ${mediaType}.`);
       });
 
       agoraClient.on("user-left", async (user) => {
-        console.log("User left:", user.uid);
         const userId = user.uid.toString();
         await updateUserInRealtimeDB(userId, { status: "left" });
         await updateUserInFirestore(userId, {}, "remove");

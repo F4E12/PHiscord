@@ -10,7 +10,6 @@ function monitorUserPresence(userId: string) {
   onValue(connectedRef, (snapshot) => {
     if (snapshot.val() === false) {
       // Client is offline, set Realtime Database status to offline
-      console.log("Client is offline.");
       set(userStatusDatabaseRef, {
         online: false,
         last_changed: new Date().toISOString()
