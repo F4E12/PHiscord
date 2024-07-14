@@ -102,3 +102,19 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.title-bar {
+  -webkit-app-region: drag;
+}
+
+.title-bar__controls {
+  -webkit-app-region: no-drag;
+}
+
+.title-bar__button {
+  background: none;
+  border: none;
+  padding: 5px;
+  margin: 0 5px;
+  cursor: pointer;
+}

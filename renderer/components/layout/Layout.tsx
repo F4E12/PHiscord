@@ -8,7 +8,7 @@ import { updateUserData } from "@/lib/updateuserdata";
 import { getAllServerDetails, getTextChannels } from "@/lib/retrieveserver";
 import { doc, onSnapshot } from "firebase/firestore";
 
-const Layout = ({ children }) => {
+const Layout = ({}) => {
   const [selectedServer, setSelectedServer] = useState<any>("DM");
   const [selectedChannel, setSelectedChannel] = useState<any>(null);
   const [channelType, setChannelType] = useState<any>(null);
@@ -88,7 +88,7 @@ const Layout = ({ children }) => {
   }, [selectedServer]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-full">
       <ServerList
         setSelectedServer={setSelectedServer}
         userData={userData}

@@ -7,6 +7,7 @@ import Layout from "../components/layout/Layout";
 import monitorUserPresence from "@/lib/monitoruserpresence";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { firestore } from "@/firebase/firebaseApp"; // Ensure this import is correct
+import TitleBar from "@/components/ui/titlebar";
 
 const HomePage = () => {
   const [user, loading, error] = useAuthState(auth);
@@ -76,13 +77,22 @@ const HomePage = () => {
     }
   }, [user]);
 
+  let ipc;
+  if (typeof window !== "undefined") {
+    ipc = (window as any).ipc;
+  }
+  let isElectron = ipc ? true : false;
+
   return (
-    <div className="">
-      <Layout>
-        <Head>
-          <title>PHiscord - Home Page</title>
-        </Head>
-      </Layout>
+    <div className="flex flex-col h-screen">
+      {isElectron && (
+        <div className="h-6 flex-shrink-0">
+          <TitleBar />
+        </div>
+      )}
+      <div className="flex-grow overflow-auto">
+        <Layout />
+      </div>
     </div>
   );
 };

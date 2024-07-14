@@ -17,7 +17,10 @@ interface IconProps {
     | "search"
     | "speaker"
     | "hashtag"
-    | "call";
+    | "call"
+    | "minimize"
+    | "maximize"
+    | "close";
 }
 
 function Icon({ type }: IconProps) {
@@ -374,6 +377,57 @@ function Icon({ type }: IconProps) {
           stroke-width="2"
           d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
         />
+      </svg>
+    );
+  }
+  if (type === "minimize") {
+    return (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-foreground"
+      >
+        <rect x="4" y="9" width="12" height="2" fill="#C0C0C0" />
+      </svg>
+    );
+  }
+  if (type === "maximize") {
+    return (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-foreground"
+      >
+        <rect
+          x="4"
+          y="4"
+          width="12"
+          height="12"
+          stroke="#C0C0C0"
+          fill="none"
+          stroke-width="2"
+        />
+      </svg>
+    );
+  }
+  if (type === "close") {
+    return (
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-foreground"
+      >
+        <line x1="4" y1="4" x2="16" y2="16" stroke="#C0C0C0" stroke-width="2" />
+        <line x1="4" y1="16" x2="16" y2="4" stroke="#C0C0C0" stroke-width="2" />
       </svg>
     );
   }

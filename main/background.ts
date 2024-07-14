@@ -68,6 +68,7 @@ app.setJumpList([
     mainWindow = createWindow('main', {
       width: 1000,
       height: 600,
+      frame: false,
       icon: icons,
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
@@ -111,3 +112,19 @@ function toggleDeafen() {
 function quitApp() {
   app.quit();
 }
+
+ipcMain.on('minimize-window', () => {
+  mainWindow.minimize();
+});
+
+ipcMain.on('maximize-window', () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+
+ipcMain.on('close-window', () => {
+  mainWindow.close();
+});
