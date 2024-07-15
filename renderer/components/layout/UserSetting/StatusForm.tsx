@@ -13,11 +13,11 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
   const [counter2, setCounter2] = useState(0);
 
   useEffect(() => {
-    if (predefinedStatuses.includes(userData.status)) {
-      setStatus(userData.status);
+    if (predefinedStatuses.includes(userData?.status)) {
+      setStatus(userData?.status);
     } else {
       setStatus("Custom");
-      setCustomStatus(userData.status);
+      setCustomStatus(userData?.status);
     }
   }, [userData]);
 
@@ -47,7 +47,7 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
 
   const updateStatusInFirestore = async (status: string) => {
     try {
-      await updateUserStatus(userData.id, status);
+      await updateUserStatus(userData?.id, status);
     } catch (error) {
       console.error("Error updating status:", error);
     }
@@ -74,7 +74,7 @@ const StatusForm: React.FC<StatusFormProps> = ({ userData }) => {
           <option value="Custom">Custom</option>
         </select>
       </div>
-      {status === "custom" && (
+      {status === "Custom" && (
         <form onSubmit={handleCustomStatusSubmit} className="space-y-4">
           <div>
             <label htmlFor="customStatus" className="block text-gray-400 mb-2">

@@ -401,7 +401,7 @@ const CallComponent = ({
         </button>
         <button
           onClick={toggleDeafen}
-          className="mr-2 p-2 bg-bordeer text-foreground rounded"
+          className="mr-2 p-2 bg-border text-foreground rounded"
         >
           {connectedUsers.find((user) => user.uid === uid)?.isDeafened
             ? "Undeafen"

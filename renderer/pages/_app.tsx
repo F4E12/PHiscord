@@ -7,17 +7,9 @@ import { Toaster } from "@/components/ui/toaster";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="">
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <Component {...pageProps} />
-        <Toaster />
-      </ThemeProvider>
-    </div>
+    <React.Fragment>
+      <Component {...pageProps} />
+    </React.Fragment>
   );
 }
 

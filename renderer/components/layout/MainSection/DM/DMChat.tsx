@@ -482,7 +482,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
               </span>
 
               {searchResults && searchMsg && (
-                <div className="z-20 fixed top-8 right-2 bg-secondary max-h-64 overflow-auto p-2">
+                <div className="z-20 fixed top-12 right-2 bg-secondary max-h-64 overflow-auto p-2">
                   {searchResults.map((message) => (
                     <div className="flex items-start space-x-4 p-2 bg-primary text-secondary-foreground rounded-lg max-w-md mx-auto mt-2 hover:bg-background hover:cursor-pointer">
                       <Avatar className="">

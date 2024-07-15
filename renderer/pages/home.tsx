@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Head from "next/head";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/firebaseApp";
@@ -8,6 +8,7 @@ import monitorUserPresence from "@/lib/monitoruserpresence";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { firestore } from "@/firebase/firebaseApp"; // Ensure this import is correct
 import TitleBar from "@/components/ui/titlebar";
+import Image from "next/image";
 
 const HomePage = () => {
   const [user, loading, error] = useAuthState(auth);
@@ -80,13 +81,23 @@ const HomePage = () => {
   return (
     <div className="flex flex-col h-screen">
       {isElectron && (
-        <div className="h-6 flex-shrink-0">
+        <div className="h-6 flex-shrink-0" id="default">
           <TitleBar />
         </div>
       )}
-      <div className="flex-grow overflow-auto">
+      <div className="flex-grow overflow-auto" id="default">
         <Layout />
       </div>
+      {isElectron && (
+        <div id="overlay" className="overflow-hidden bg-none">
+          <Image
+            width={75}
+            height={75}
+            src="/images/PHiscordLogoNOBG.png"
+            alt="logo"
+          ></Image>
+        </div>
+      )}
     </div>
   );
 };

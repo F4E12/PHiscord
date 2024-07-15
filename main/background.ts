@@ -42,6 +42,8 @@ app.setJumpList([
   }
 ]);
 
+let port;
+
 ;(async () => {
   await app.whenReady().then(() => {
     app.setName('PHiscord');
@@ -73,7 +75,9 @@ app.setJumpList([
     if (isProd) {
       mainWindow.loadURL('app://./home');
     } else {
-      const port = process.argv[2];
+      port = process.argv[2];
+      createOverlayWindow();
+      overlayWindow.hide();
       mainWindow.loadURL(`http://localhost:${port}/home`);
       mainWindow.webContents.openDevTools();
     }
@@ -81,6 +85,33 @@ app.setJumpList([
     handleCommandLineArguments(process.argv);
   });
 })();
+
+let overlayWindow;
+function createOverlayWindow() {
+  overlayWindow = new BrowserWindow({
+    width: 75,
+    height: 75,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
+    }
+  });
+
+  overlayWindow.loadURL(`http://localhost:${port}/home`);
+}
+
+ipcMain.on('toggle-overlay', () => {
+  if (overlayWindow.isVisible()) {
+    overlayWindow.hide();
+  } else {
+    overlayWindow.show();
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
