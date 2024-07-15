@@ -12,6 +12,14 @@ const AddFriend: React.FC = () => {
 
   const handleSendRequest = async () => {
     if (!user || !targetUserId) return;
+    if (targetUserId.includes("/")) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error sending friend request.",
+      });
+      return;
+    }
     if (user.uid === targetUserId) {
       toast({
         variant: "destructive",

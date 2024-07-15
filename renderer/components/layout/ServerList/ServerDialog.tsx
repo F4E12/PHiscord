@@ -115,7 +115,7 @@ const ServerDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full text-form transition-all duration-300 ease-in-out hover:bg-foreground hover:text-foreground">
+        <button className="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full text-form transition-all duration-300 ease-in-out hover:bg-background hover:text-foreground">
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
           </svg>
