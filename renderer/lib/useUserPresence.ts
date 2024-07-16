@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
-import { auth, database } from '@/firebase/firebaseApp';
-import { onDisconnect, onValue, ref, serverTimestamp, set } from 'firebase/database';
+import { useEffect, useState } from 'react';
 import { getAuth } from 'firebase/auth';
+import { database } from '@/firebase/firebaseApp';
+import { onDisconnect, onValue, ref, serverTimestamp, set } from 'firebase/database';
 
 const useUserPresence = (userId: string) => {
+  const [isOnline, setIsOnline] = useState(false);
+
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -30,13 +32,17 @@ const useUserPresence = (userId: string) => {
 
       onDisconnect(userPresenceDatabaseRef).set(isOfflineForDatabase).then(() => {
         set(userPresenceDatabaseRef, isOnlineForDatabase);
+        setIsOnline(true);
       });
     });
 
     return () => {
       set(userPresenceDatabaseRef, isOfflineForDatabase);
+      setIsOnline(false);
     };
   }, [userId]);
+
+  return isOnline;
 };
 
 export default useUserPresence;

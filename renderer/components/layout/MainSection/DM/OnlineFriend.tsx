@@ -16,7 +16,7 @@ const OnlineFriends = ({ setSelectedFriend }: OnlineFriendProps) => {
   const friendsRefs = useRef<any[]>([]);
   const { toast } = useToast();
 
-  useUserPresence(user?.uid || "");
+  // useUserPresence(user?.uid || "");
 
   useEffect(() => {
     const fetchOnlineFriends = async () => {

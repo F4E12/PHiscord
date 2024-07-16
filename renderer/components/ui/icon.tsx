@@ -355,9 +355,9 @@ function Icon({ type }: IconProps) {
       >
         <path
           fill="currentColor"
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M10.99 3.16A1 1 0 1 0 9 2.84L8.15 8H4a1 1 0 0 0 0 2h3.82l-.67 4H3a1 1 0 1 0 0 2h3.82l-.8 4.84a1 1 0 0 0 1.97.32L8.85 16h4.97l-.8 4.84a1 1 0 0 0 1.97.32l.86-5.16H20a1 1 0 1 0 0-2h-3.82l.67-4H21a1 1 0 1 0 0-2h-3.82l.8-4.84a1 1 0 1 0-1.97-.32L15.15 8h-4.97l.8-4.84ZM14.15 14l.67-4H9.85l-.67 4h4.97Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
           className="text-foreground"
         ></path>
       </svg>
@@ -372,9 +372,9 @@ function Icon({ type }: IconProps) {
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
           d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
         />
       </svg>
@@ -411,7 +411,7 @@ function Icon({ type }: IconProps) {
           height="12"
           stroke="#C0C0C0"
           fill="none"
-          stroke-width="2"
+          strokeWidth="2"
         />
       </svg>
     );
@@ -426,8 +426,8 @@ function Icon({ type }: IconProps) {
         xmlns="http://www.w3.org/2000/svg"
         className="text-foreground"
       >
-        <line x1="4" y1="4" x2="16" y2="16" stroke="#C0C0C0" stroke-width="2" />
-        <line x1="4" y1="16" x2="16" y2="4" stroke="#C0C0C0" stroke-width="2" />
+        <line x1="4" y1="4" x2="16" y2="16" stroke="#C0C0C0" strokeWidth="2" />
+        <line x1="4" y1="16" x2="16" y2="4" stroke="#C0C0C0" strokeWidth="2" />
       </svg>
     );
   }

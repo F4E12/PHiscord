@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { firestore, auth } from "@/firebase/firebaseApp";
 import { database } from "@/firebase/firebaseApp";
-import { ref as databaseRef, remove } from "firebase/database";
+import { ref as databaseRef, onValue, remove } from "firebase/database";
 import {
   collection,
   query,
@@ -178,7 +178,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
       const afterMention = newMessage.slice(cursorPosition);
       const newText = `${beforeMention}@${username} ${afterMention}`;
       setNewMessage(newText);
-      setCursorPosition(beforeMention.length + username.length + 2); // Adjust cursor position after mention
+      setCursorPosition(beforeMention.length + username.length + 2);
       setShowMentionSuggestions(false);
       inputRef.current.focus();
     }
@@ -397,8 +397,31 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
     setShowEmojiPicker(false);
   };
 
+  //FONT SIZE
+  const [fontSize, setFontSize] = useState("base");
+  useEffect(() => {
+    const fontSizeRef = databaseRef(
+      database,
+      `users/${user.uid}/settings/fontSize`
+    );
+
+    const unsubscribe = onValue(fontSizeRef, (snapshot) => {
+      const value = snapshot.val();
+      setFontSize(value);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user.uid]);
+
   return (
-    <div className="overflow-auto w-full flex-grow flex flex-col h-full justify-between">
+    <div
+      className={
+        "overflow-auto w-full flex-grow flex flex-col h-full justify-between text-" +
+        fontSize
+      }
+    >
       <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
         <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
           <span># {channel?.name}</span>
@@ -644,7 +667,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
             />
             <Button
               onClick={() => saveEditMessage(editingMessage?.text)}
-              className="w-full"
+              className="w-full bg-primary text-accent-foreground"
             >
               Save
             </Button>

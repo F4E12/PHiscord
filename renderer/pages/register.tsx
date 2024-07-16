@@ -77,13 +77,17 @@ export function RegisterForm() {
       );
       const user = userCredential.user;
 
+      const year = values.year.toString();
+      const month = values.month.toString().padStart(2, "0");
+      const day = values.day.toString().padStart(2, "0");
+
       const currentDetails = {
         id: user.uid,
         email: values.email,
         username: values.username,
         displayname: values.displayname,
         status: "",
-        DOB: `${values.year}-${values.month}-${values.day}`,
+        DOB: `${year}-${month}-${day}`,
         profilePicture: "",
         serverList: "",
       };

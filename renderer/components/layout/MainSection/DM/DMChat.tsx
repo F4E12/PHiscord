@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, use } from "react";
-import { firestore, auth } from "@/firebase/firebaseApp";
+import { firestore, auth, database } from "@/firebase/firebaseApp";
+import { ref as databaseRef, onValue, remove } from "firebase/database";
 import {
   collection,
   query,
@@ -438,6 +439,24 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
     }
   }, [user, channelId, user?.uid]);
 
+  //FONT SIZE
+  const [fontSize, setFontSize] = useState("base");
+  useEffect(() => {
+    const fontSizeRef = databaseRef(
+      database,
+      `users/${user.uid}/settings/fontSize`
+    );
+
+    const unsubscribe = onValue(fontSizeRef, (snapshot) => {
+      const value = snapshot.val();
+      setFontSize(value);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user.uid]);
+
   return (
     <>
       {isJoin ? (
@@ -456,7 +475,12 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
         </div>
       ) : (
         // <div className="flex-grow h-full">
-        <div className="w-full flex-grow flex flex-col h-full justify-between">
+        <div
+          className={
+            "overflow-auto w-full flex-grow flex flex-col h-full justify-between text-" +
+            fontSize
+          }
+        >
           <div className="chat-messages flex flex-col space-y-2 mb-4 h-full overflow-auto">
             <div className="p-2 border-b-2 border-[#202124] flex justify-between items-center bg-background">
               {members[friendId]?.displayname}

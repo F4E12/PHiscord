@@ -150,7 +150,7 @@ const CallComponent = ({
               "w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3";
             document
               .getElementById(`video-user-${user.uid}`)
-              .append(videoContainer);
+              ?.append(videoContainer);
           }
           remoteVideoTrack.play(videoContainer);
           const placeholder = document.getElementById(
@@ -308,7 +308,7 @@ const CallComponent = ({
         videoContainer.id = `local-player-${uid}`;
         videoContainer.className =
           "w-96 h-52 border border-border flex items-center justify-center mb-2 rounded bg-card text-cardForeground gap-3";
-        document.getElementById(`video-user-${uid}`).append(videoContainer);
+        document.getElementById(`video-user-${uid}`)?.append(videoContainer);
       }
       localVideoTrack.play(videoContainer);
 

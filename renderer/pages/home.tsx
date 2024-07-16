@@ -13,11 +13,9 @@ import Image from "next/image";
 const HomePage = () => {
   const [user, loading, error] = useAuthState(auth);
   const [notifications, setNotifications] = useState([]);
-
+  monitorUserPresence(user.uid);
   useEffect(() => {
     if (user) {
-      monitorUserPresence(user.uid);
-
       const notificationsRef = collection(
         firestore,
         `notifications/${user.uid}/messages`

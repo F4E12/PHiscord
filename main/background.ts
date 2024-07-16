@@ -50,6 +50,10 @@ let port;
     
     // TRAY
     tray = new Tray(icons);
+
+    if (process.platform === "win32") {
+    app.setAppUserModelId("PHiscord");
+}
     
     const contextMenu = Menu.buildFromTemplate([
       { label: 'Open PHiscord', click: () => mainWindow.show() },

@@ -22,7 +22,6 @@ export const getUsersInServer = async (serverId: string) => {
     const serverSnapshot = await getDoc(serverDocRef);
 
     if (!serverSnapshot.exists()) {
-      console.error(`Server with ID ${serverId} does not exist.`);
       return [];
     }
 
@@ -42,10 +41,8 @@ export const getUsersInServer = async (serverId: string) => {
       return users;
     }
 
-    console.warn(`Server with ID ${serverId} has no members.`);
     return [];
   } catch (error) {
-    console.error(`Error fetching users for server ID ${serverId}:`, error);
     throw error;
   }
 };

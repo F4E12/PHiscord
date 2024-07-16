@@ -55,7 +55,10 @@ const ServerCall = ({
           setJoin={setJoin}
         />
       ) : (
-        <div className="">
+        <div className="flex flex-col items-center justify-center">
+          {connectedUsers.length > 0
+            ? "Connected User"
+            : "There is no one connected to this channel"}
           {connectedUsers.map((user) => (
             <li
               key={user.uid}
@@ -64,12 +67,12 @@ const ServerCall = ({
               {user.username}
             </li>
           ))}
-          <Button
-            className={buttonVariants({ variant: "form" })}
+          <button
+            className="bg-blue-700 hover:bg-blue-800 cursor-pointer p-2 rounded-md"
             onClick={() => setJoin(true)}
           >
             Join Voice
-          </Button>
+          </button>
         </div>
       )}
     </div>

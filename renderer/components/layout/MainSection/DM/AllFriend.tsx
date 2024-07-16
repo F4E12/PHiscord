@@ -58,6 +58,7 @@ const AllFriends = ({ setSelectedFriend }: AllFriendProps) => {
       setAllFriends((prevFriends) =>
         prevFriends.filter((friend) => friend.id !== friendId)
       );
+      setSelectedFriend("friendMenu");
     }
   };
 
@@ -78,6 +79,7 @@ const AllFriends = ({ setSelectedFriend }: AllFriendProps) => {
       setAllFriends((prevFriends) =>
         prevFriends.filter((friend) => friend.id !== friendId)
       );
+      setSelectedFriend("friendMenu");
     }
   };
 

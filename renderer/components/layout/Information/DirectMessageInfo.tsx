@@ -3,7 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Icon from "@/components/ui/icon";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firestore } from "@/firebase/firebaseApp";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 interface DirectMessageProps {
   setSelectedFriend: (friend: any | null) => void;
@@ -14,29 +21,52 @@ const DirectMessageInfo = ({ setSelectedFriend }: DirectMessageProps) => {
   const [allFriends, setAllFriends] = useState<any[]>([]);
 
   useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
     if (!user) return;
 
-    const userDocRef = doc(firestore, "users", user.uid);
+    const directMessagesCollectionRef = collection(
+      firestore,
+      `users/${user.uid}/directMessage`
+    );
 
-    const unsubscribe = onSnapshot(userDocRef, async (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const userData = docSnapshot.data();
+    const fetchFriendUsers = () => {
+      const unsubscribe = onSnapshot(
+        directMessagesCollectionRef,
+        async (snapshot) => {
+          const userPromises = [];
 
-        if (userData && userData.friends) {
-          const friends = await Promise.all(
-            userData.friends.map(async (friendId) => {
-              const friendDoc = await getDoc(doc(firestore, "users", friendId));
-              return { id: friendDoc.id, ...friendDoc.data() };
+          snapshot.forEach((doc) => {
+            const friendId = doc.id;
+            if (friendId !== user.uid) {
+              userPromises.push(friendId);
+            }
+          });
+
+          const users = await Promise.all(
+            userPromises.map(async (friendId) => {
+              const userDoc = await getDoc(doc(firestore, "users", friendId));
+              return { id: userDoc.id, ...userDoc.data() };
             })
           );
-          setAllFriends(friends);
-          setFilteredFriends(friends);
-        }
-      }
-    });
 
-    return () => unsubscribe();
-  }, [user]);
+          setAllFriends(users);
+          setFilteredFriends(users);
+        }
+      );
+
+      return unsubscribe;
+    };
+
+    const unsubscribe = fetchFriendUsers();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [user.uid]);
 
   // SEARCH CONVERSATION
   const [searchItem, setSearchItem] = useState("");
