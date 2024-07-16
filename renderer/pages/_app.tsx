@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="">
+    <div>
       <ThemeProvider
         attribute="class"
         defaultTheme="system"

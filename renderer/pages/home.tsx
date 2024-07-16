@@ -95,7 +95,7 @@ const HomePage = () => {
             height={75}
             src="/images/PHiscordLogoNOBG.png"
             alt="logo"
-          ></Image>
+          />
         </div>
       )}
     </div>
