@@ -238,7 +238,7 @@ export function RegisterForm() {
                         {...field}
                         className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
-                        {/* <option value="">Year</option> */}
+                        <option value="">Year</option>
                         {years}
                       </select>
                     </FormControl>
