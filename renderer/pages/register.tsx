@@ -202,7 +202,7 @@ export function RegisterForm() {
                         {...field}
                         className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
-                        {/* <option value="">Month</option> */}
+                        <option value="">Month</option>
                         {months}
                       </select>
                     </FormControl>
@@ -220,7 +220,7 @@ export function RegisterForm() {
                         {...field}
                         className="flex-1 bg-primary rounded-md px-3 py-2 w-full"
                       >
-                        {/* <option value="">Day</option> */}
+                        <option value="">Day</option>
                         {days}
                       </select>
                     </FormControl>
