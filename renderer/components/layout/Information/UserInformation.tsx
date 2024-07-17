@@ -196,7 +196,7 @@ function UserInformation({ userData, onProfileUpdate, onImageChange }) {
         )}
         {setting && (
           <button
-            className="absolute right-0 top-0 z-10"
+            className="absolute right-4 top-4 z-10"
             onClick={() => toggleSetting()}
           >
             ✕
