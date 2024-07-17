@@ -236,15 +236,23 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
 
   const Filter = require("bad-words");
   const filter = new Filter();
+  filter.addWords("kasar");
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
-    const filterMsg = filter.clean(newMessage);
+    const textRegex = /[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+/g;
+    const emojiOnly = !textRegex.test(newMessage);
+    let filterMsg;
+    if (!emojiOnly) {
+      filterMsg = filter.clean(newMessage);
+    } else {
+      return;
+    }
     setNewMessage("");
     const messageDocRef = await addDoc(
       collection(firestore, `directMessages/${channelId}/messages`),
       {
-        text: newMessage,
+        text: filterMsg,
         createdAt: serverTimestamp(),
         uid: user?.uid,
         fileType,
@@ -565,7 +573,23 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                         {members[msg.uid]?.displayname}
                       </p>
                       <div className="text-foreground">{msg?.text}</div>
-                      {msg.fileType === "image" && (
+                      {msg?.fileType != "image" && msg?.fileType != "" && (
+                        <div className="">
+                          <a
+                            href={msg.fileURL}
+                            download={msg.fileName}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:underline"
+                          >
+                            <Icon type="file"></Icon>
+                            <div className="text-xs">
+                              {truncateString(msg?.fileName, 12)}
+                            </div>
+                          </a>
+                        </div>
+                      )}
+                      {msg?.fileType == "image" && (
                         <div className="">
                           <Dialog>
                             <DialogTrigger>
@@ -587,7 +611,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                             className="text-blue-500 hover:underline"
                           >
                             <div className="text-xs">
-                              {truncateString(msg.fileName, 12)}
+                              {truncateString(msg?.fileName, 12)}
                             </div>
                           </a>
                         </div>
@@ -622,7 +646,23 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                     key={msg.id}
                   >
                     {msg.text}
-                    {msg.fileType === "image" && (
+                    {msg?.fileType != "image" && msg?.fileType != "" && (
+                      <div className="">
+                        <a
+                          href={msg.fileURL}
+                          download={msg.fileName}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          <Icon type="file"></Icon>
+                          <div className="text-xs">
+                            {truncateString(msg?.fileName, 12)}
+                          </div>
+                        </a>
+                      </div>
+                    )}
+                    {msg?.fileType == "image" && (
                       <div className="">
                         <Dialog>
                           <DialogTrigger>
@@ -644,7 +684,7 @@ const DirectMessage = ({ friendId }: DirectMessageProps) => {
                           className="text-blue-500 hover:underline"
                         >
                           <div className="text-xs">
-                            {truncateString(msg.fileName, 12)}
+                            {truncateString(msg?.fileName, 12)}
                           </div>
                         </a>
                       </div>

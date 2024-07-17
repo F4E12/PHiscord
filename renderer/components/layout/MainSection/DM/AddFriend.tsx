@@ -51,6 +51,20 @@ const AddFriend: React.FC = () => {
         return;
       }
 
+      // Check if the user has blocked the target user
+      if (
+        userData &&
+        userData.blocked &&
+        userData.blocked.includes(targetUserId)
+      ) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "You have blocked this user.",
+        });
+        return;
+      }
+
       // Get the target user's document
       const targetUserDoc = await getDoc(targetUserRef);
       const targetUserData = targetUserDoc.data();
@@ -65,6 +79,20 @@ const AddFriend: React.FC = () => {
           variant: "destructive",
           title: "Error",
           description: "This user has already sent you a friend request.",
+        });
+        return;
+      }
+
+      // Check if the target user has blocked the current user
+      if (
+        targetUserData &&
+        targetUserData.blocked &&
+        targetUserData.blocked.includes(user.uid)
+      ) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "You have been blocked by this user.",
         });
         return;
       }

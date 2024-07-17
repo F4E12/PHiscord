@@ -30,18 +30,6 @@ function handleCommandLineArguments(argv = process.argv) {
   });
 }
 
-app.setJumpList([
-  {
-    type: 'custom',
-    name: 'Quick Actions',
-    items: [
-      { type: 'task', title: 'Mute', description: 'Toggle mute', program: process.execPath, args: '--toggle-mute', iconPath: process.execPath, iconIndex: 0 },
-      { type: 'task', title: 'Deafen', description: 'Toggle deafen', program: process.execPath, args: '--toggle-deafen', iconPath: process.execPath, iconIndex: 0 },
-      { type: 'task', title: 'Disconnect', description: 'Disconnect from channel', program: process.execPath, args: '--disconnect', iconPath: process.execPath, iconIndex: 0 }
-    ]
-  }
-]);
-
 let port;
 
 ;(async () => {
@@ -65,6 +53,18 @@ let port;
 
     tray.setToolTip('PHiscord');
     tray.setContextMenu(contextMenu);
+
+    app.setJumpList([
+  {
+    type: 'custom',
+    name: 'Quick Actions',
+    items: [
+      { type: 'task', title: 'Mute', description: 'Toggle mute', program: process.execPath, args: '--toggle-mute', iconPath: process.execPath, iconIndex: 0 },
+      { type: 'task', title: 'Deafen', description: 'Toggle deafen', program: process.execPath, args: '--toggle-deafen', iconPath: process.execPath, iconIndex: 0 },
+      { type: 'task', title: 'Disconnect', description: 'Disconnect from channel', program: process.execPath, args: '--disconnect', iconPath: process.execPath, iconIndex: 0 }
+    ]
+  }
+]);
 
     mainWindow = createWindow('main', {
       width: 1000,

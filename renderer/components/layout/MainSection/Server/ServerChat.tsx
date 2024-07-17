@@ -238,11 +238,18 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
 
   const Filter = require("bad-words");
   const filter = new Filter();
+  filter.addWords("kasar");
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === "" && filePreview === "") return;
-
-    const filterMsg = filter?.clean(newMessage);
+    const textRegex = /[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+/g;
+    const emojiOnly = !textRegex.test(newMessage);
+    let filterMsg;
+    if (!emojiOnly) {
+      filterMsg = filter.clean(newMessage);
+    } else {
+      return;
+    }
     setNewMessage("");
 
     // Add message to Firestore
@@ -512,7 +519,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                       >
                         <Icon type="file"></Icon>
                         <div className="text-xs">
-                          {truncateString(fileName, 12)}
+                          {truncateString(msg?.fileName, 12)}
                         </div>
                       </a>
                     </div>
@@ -539,7 +546,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                         className="text-blue-500 hover:underline"
                       >
                         <div className="text-xs">
-                          {truncateString(fileName, 12)}
+                          {truncateString(msg?.fileName, 12)}
                         </div>
                       </a>
                     </div>
@@ -587,7 +594,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                     >
                       <Icon type="file"></Icon>
                       <div className="text-xs">
-                        {truncateString(msg.fileName, 12)}
+                        {truncateString(msg?.fileName, 12)}
                       </div>
                     </a>
                   </div>
@@ -614,7 +621,7 @@ const ServerChat = ({ server, channel, members }: ServerChatProps) => {
                       className="text-blue-500 hover:underline"
                     >
                       <div className="text-xs">
-                        {truncateString(msg.fileName, 12)}
+                        {truncateString(msg?.fileName, 12)}
                       </div>
                     </a>
                   </div>

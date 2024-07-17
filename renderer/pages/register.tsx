@@ -92,13 +92,9 @@ export function RegisterForm() {
         serverList: "",
       };
 
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          const userDocRef = doc(firestore, "users", user.uid);
-          await setDoc(userDocRef, currentDetails);
-          router.push("/login"); // Redirect to login page after successful registration
-        }
-      });
+      const userDocRef = doc(firestore, "users", user.uid);
+      await setDoc(userDocRef, currentDetails);
+      router.push("/login"); // Redirect to login page after successful registration
     } catch (err) {}
   };
 
